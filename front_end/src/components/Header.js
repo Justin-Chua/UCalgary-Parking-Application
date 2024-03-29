@@ -1,7 +1,7 @@
 function Header() {
     return (
         <div>
-            <button>This is a header</button>
+            <h1>This is a header</h1>
         </div>
     );
 }
