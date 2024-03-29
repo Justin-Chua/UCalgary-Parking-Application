@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './pages/Home';
@@ -8,6 +8,7 @@ import Reservation from './pages/Reservation';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 function App() {
+
   return (
     <>
       <Header />
