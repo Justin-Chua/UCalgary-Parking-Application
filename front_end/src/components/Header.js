@@ -15,7 +15,7 @@ function Header() {
             </Bootstrap.Container>
             <Bootstrap.Container>
                 <Bootstrap.Nav className="justify-content-center flex-grow-1">
-                    <Bootstrap.NavLink className="center-nav-element" to="/" exact activeClassName="active">
+                    <Bootstrap.NavLink className="center-nav-element" href="/">
                         <Icons.HouseDoorFill className="icon-size" />
                     </Bootstrap.NavLink>
                     <Bootstrap.NavLink className="center-nav-element" href="ticket">
