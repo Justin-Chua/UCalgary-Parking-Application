@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+</head>
+<body>
+    <h2>Payment</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="Name">Name:</label>
+        <input type="text" id="Name" name="Name" required><br>
+        <div class="cardexp">
+            <label for="Number">Number:</label>
+            <input id="Number" inputmode="numeric" maxlength="19" pattern="[0-9\s]{13,19}" placeholder="xxxx xxxx xxxx xxxx" name="Number" type="text" />
+        </div>
+        <div class="cardexp">
+            <label for="ExpiryDate">Expiry Date:</label>
+            <input id="month" inputmode="numeric" maxlength="2" placeholder="MM" name="month" type="text" />
+            <input id="year"  inputmode="numeric" maxlength="2" placeholder="YY" name="year" type="text" />
+        </div>
+        <label for="cvv">CVV:</label>
+        <input type="text" id="cvv" name="cvv" required><br>
+        <button type="submit">Pay</button>
+    </form>
+</body>
+</html>
