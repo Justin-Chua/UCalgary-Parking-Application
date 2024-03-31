@@ -7,6 +7,8 @@ import Permit from './pages/Permit';
 import Reservation from './pages/Reservation';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import Signup from './pages/Signup';
+import Editprofile from './pages/Editprofile';
 function App() {
 
   return (
@@ -20,6 +22,8 @@ function App() {
           <Route path = "/reservation" element = { <Reservation /> } />
           <Route path = "/login" element = { <Login /> } />
           <Route path = "/profile" element = { <Profile /> } />
+          <Route path = "/signup" element = { <Signup /> } />
+          <Route path = "/editprofile" element = { <Editprofile /> } />
         </Routes>
       </Router>
     </>
