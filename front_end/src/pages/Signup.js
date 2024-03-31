@@ -1,6 +1,6 @@
 // Import necessary components and assets
 import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap'; // Import Alert component for error messages
+import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/header.css';
 
@@ -12,7 +12,7 @@ function Signup() {
     const [plateNo, setPlateNo] = useState('');
     const [plateNoError, setPlateNoError] = useState('');
 
-    // Function to handle form submission
+
     const handleSubmit = (event) => {
         event.preventDefault(); 
         let valid = true;
@@ -39,8 +39,7 @@ function Signup() {
         }
 
         if (valid) {
-            // Here you can submit the form or perform other actions
-            // Redirect to home page after successful signup
+
             window.location.href = '/';
         }
     };

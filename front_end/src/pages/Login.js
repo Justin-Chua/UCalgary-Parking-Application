@@ -10,7 +10,7 @@ function Login() {
     const [ucidError, setUCIDError] = useState(''); 
     const [passwordError, setPasswordError] = useState(''); 
 
-    // Function to handle form submission
+
     const handleSubmit = (event) => {
         event.preventDefault(); 
         if (ucid.length !== 8) {
@@ -21,7 +21,7 @@ function Login() {
                 setPasswordError('Incorrect password');
             } else {
                 setPasswordError(''); 
-                // Redirect to home page after successful login
+
                 window.location.href = '/';
             }
         }
@@ -29,16 +29,16 @@ function Login() {
 
     return (
         <Container>
-            <Form onSubmit={handleSubmit}> {/* Use handleSubmit function for form submission */}
+            <Form onSubmit={handleSubmit}> {}
                 <Form.Group className="mb-3" controlId="loginBasicUCID">
                     <Form.Label>UCID</Form.Label>
                     <Form.Control 
                         type="text" 
                         placeholder="Enter UCID"
                         value={ucid}
-                        onChange={(e) => setUCID(e.target.value)} // Update UCID state on input change
+                        onChange={(e) => setUCID(e.target.value)} 
                     />
-                    {ucidError && <Alert variant="danger">{ucidError}</Alert>} {/* Display UCID error message */}
+                    {ucidError && <Alert variant="danger">{ucidError}</Alert>} {}
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="loginBasicPassword">
@@ -47,9 +47,9 @@ function Login() {
                         type="password" 
                         placeholder="Enter Password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)} // Update password state on input change
+                        onChange={(e) => setPassword(e.target.value)} 
                     />
-                    {passwordError && <Alert variant="danger">{passwordError}</Alert>} {/* Display password error message */}
+                    {passwordError && <Alert variant="danger">{passwordError}</Alert>} {}
                 </Form.Group>
 
                 <Button variant="danger" type="submit">

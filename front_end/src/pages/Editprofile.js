@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap'; // Import components from react-bootstrap
+import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function EditProfile() {
-    // Define state variables to store user information and new data
+
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
     const [phoneNo, setPhoneNo] = useState('');
@@ -11,10 +11,10 @@ function EditProfile() {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Function to handle form submission when updating user information
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        // Validation checks
+
         if (phoneNo.length !== 9) {
             setErrorMessage('Please enter a 9-digit phone number.');
             return;
@@ -23,11 +23,10 @@ function EditProfile() {
             setErrorMessage('License plates are a maximum of 7 characters long.');
             return;
         }
-        // Logic to update user information
+
         console.log('Updated Profile:', { email, address, phoneNo, plateNo, password });
     };
 
-    // Function to handle redirection to profile page
     const redirectToProfile = () => {
         window.location.href = '/profile';
     };
