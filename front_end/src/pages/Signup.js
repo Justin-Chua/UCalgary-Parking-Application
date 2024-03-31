@@ -1,4 +1,3 @@
-// Import necessary components and assets
 import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -39,83 +38,88 @@ function Signup() {
         }
 
         if (valid) {
-
             window.location.href = '/';
         }
     };
 
     return (
-        <Container>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="signupUCID">
-                    <Form.Label>UCID</Form.Label>
-                    <Form.Control 
-                        type="text" 
-                        placeholder="Enter UCID"
-                        value={ucid}
-                        onChange={(e) => setUCID(e.target.value)} 
-                    />
-                    {ucidError && <Alert variant="danger">{ucidError}</Alert>}
-                </Form.Group>
+        <div>
+            <div style={{ backgroundColor: '#e40c04', height: '7px' }}></div>
+            <div style={{ borderTop: '60px solid #8c847c' }}></div>
+            <Container className="pt-5 pb-5">
+                <Form onSubmit={handleSubmit}>
+                    <Form.Group className="mb-3" controlId="signupUCID">
+                        <Form.Label>UCID</Form.Label>
+                        <Form.Control 
+                            type="text" 
+                            placeholder="Enter UCID"
+                            value={ucid}
+                            onChange={(e) => setUCID(e.target.value)} 
+                        />
+                        {ucidError && <Alert variant="danger">{ucidError}</Alert>}
+                    </Form.Group>
 
-                <Row>
-                    <Col>
-                        <Form.Group className="mb-3" controlId="SignupBasicName">
-                            <Form.Label>Full Name</Form.Label>
-                            <Form.Control type="name" placeholder="Enter Name" />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group className="mb-3" controlId="SignupBasicEmail">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control type="email" placeholder="Enter Email" />
-                        </Form.Group>
-                    </Col>
-                </Row>
+                    <Row>
+                        <Col>
+                            <Form.Group className="mb-3" controlId="SignupBasicName">
+                                <Form.Label>Full Name</Form.Label>
+                                <Form.Control type="name" placeholder="Enter Name" />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group className="mb-3" controlId="SignupBasicEmail">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control type="email" placeholder="Enter Email" />
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                <Form.Group className="mb-3" controlId="SignupBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Enter Password" />
-                </Form.Group>
+                    <Form.Group className="mb-3" controlId="SignupBasicPassword">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control type="password" placeholder="Enter Password" />
+                    </Form.Group>
 
-                <Row>
-                    <Col>
-                        <Form.Group className="mb-3" controlId="SignupBasicAddress">
-                            <Form.Label>Address</Form.Label>
-                            <Form.Control type="address" placeholder="Enter Address" />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group className="mb-3" controlId="SignupBasicPhoneNo">
-                            <Form.Label>Phone Number</Form.Label>
-                            <Form.Control 
-                                type="tel" 
-                                placeholder="Enter Phone Number" 
-                                value={phoneNo}
-                                onChange={(e) => setPhoneNo(e.target.value)} 
-                            />
-                            {phoneNoError && <Alert variant="danger">{phoneNoError}</Alert>}
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group className="mb-3" controlId="SignupBasicPlateNo">
-                            <Form.Label>License Plate</Form.Label>
-                            <Form.Control 
-                                type="text" 
-                                placeholder="Enter License Plate" 
-                                value={plateNo}
-                                onChange={(e) => setPlateNo(e.target.value)} 
-                            />
-                            {plateNoError && <Alert variant="danger">{plateNoError}</Alert>}
-                        </Form.Group>
-                    </Col>
-                </Row>
+                    <Row>
+                        <Col>
+                            <Form.Group className="mb-3" controlId="SignupBasicAddress">
+                                <Form.Label>Address</Form.Label>
+                                <Form.Control type="address" placeholder="Enter Address" />
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group className="mb-3" controlId="SignupBasicPhoneNo">
+                                <Form.Label>Phone Number</Form.Label>
+                                <Form.Control 
+                                    type="tel" 
+                                    placeholder="Enter Phone Number" 
+                                    value={phoneNo}
+                                    onChange={(e) => setPhoneNo(e.target.value)} 
+                                />
+                                {phoneNoError && <Alert variant="danger">{phoneNoError}</Alert>}
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <Form.Group className="mb-3" controlId="SignupBasicPlateNo">
+                                <Form.Label>License Plate</Form.Label>
+                                <Form.Control 
+                                    type="text" 
+                                    placeholder="Enter License Plate" 
+                                    value={plateNo}
+                                    onChange={(e) => setPlateNo(e.target.value)} 
+                                />
+                                {plateNoError && <Alert variant="danger">{plateNoError}</Alert>}
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                <Button variant="danger" type="submit">
-                    Submit
-                </Button>
-            </Form>
-        </Container>
+                    <Button variant="danger" type="submit">
+                        Submit
+                    </Button>
+                </Form>
+            </Container>
+            <div style={{ borderTop: '60px solid #8c847c' }}></div>
+            <div style={{ backgroundColor: '#c4c3bb', height: '3000px' }}></div>
+        </div>
     );
 }
 
