@@ -1,9 +1,50 @@
+import * as Bootstrap from 'react-bootstrap';
+import * as Icons from 'react-bootstrap-icons';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import '../styles/reservation.css';
+import icon from '../assets/ucalgary-icon.png';
 function Reservation() {
     return (
-        <div>
-            <h3>This is the reservation page</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adip.</p>
-        </div>
+        <>
+            <h1 id="page-header">Parking Reservations</h1>
+            <Bootstrap.Container className="card-container">
+                <Bootstrap.Card border="dark" className="d-flex">
+                    <Bootstrap.Card.Header className="d-flex bg-red justify-content-between align-items-center text-white">
+                        <h1>Lot 10 - D12</h1>
+                        <img src={ icon } className="school-icon" alt="icon" />
+                    </Bootstrap.Card.Header>
+                    <Bootstrap.Card.Body className="text-center">
+                        <Bootstrap.Card.Text><strong>UCID: </strong>30098941</Bootstrap.Card.Text>
+                        <Bootstrap.Card.Text><strong>Payment Number: </strong>8888888</Bootstrap.Card.Text>
+                        <Bootstrap.Card.Text><strong>Date: </strong>3/30/2024</Bootstrap.Card.Text>
+                        <Bootstrap.Card.Text><strong>Start Time: </strong>6:00PM</Bootstrap.Card.Text>
+                        <Bootstrap.Card.Text><strong>End Time: </strong>8:00PM</Bootstrap.Card.Text>
+                    </Bootstrap.Card.Body>
+                    <Bootstrap.Card.Footer className="bg-red">
+                        <small className="text-white">Active</small>
+                    </Bootstrap.Card.Footer>
+                </Bootstrap.Card>
+            </Bootstrap.Container>
+            <Bootstrap.Container className="card-container">
+                <Bootstrap.Card border="dark" className="d-flex">
+                    <Bootstrap.Card.Header className="d-flex bg-red justify-content-between align-items-center text-white">
+                        <h1>Lot 10 - D12</h1>
+                        <img src={ icon } className="school-icon" alt="icon" />
+                    </Bootstrap.Card.Header>
+                    <Bootstrap.Card.Body className="text-center">
+                        <Bootstrap.Card.Text><strong>UCID: </strong>30098941</Bootstrap.Card.Text>
+                        <Bootstrap.Card.Text><strong>Payment Number: </strong>8888888</Bootstrap.Card.Text>
+                        <Bootstrap.Card.Text><strong>Date: </strong>3/30/2024</Bootstrap.Card.Text>
+                        <Bootstrap.Card.Text><strong>Start Time: </strong>6:00PM</Bootstrap.Card.Text>
+                        <Bootstrap.Card.Text><strong>End Time: </strong>8:00PM</Bootstrap.Card.Text>
+                    </Bootstrap.Card.Body>
+                    <Bootstrap.Card.Footer className="bg-red">
+                        <small className="text-white">Active</small>
+                    </Bootstrap.Card.Footer>
+                </Bootstrap.Card>
+            </Bootstrap.Container>
+    </>    
     );
 }
 
