@@ -7,6 +7,7 @@ import Permit from './pages/Permit';
 import Reservation from './pages/Reservation';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+// Card styles
 import './styles/card.css';
 function App() {
 

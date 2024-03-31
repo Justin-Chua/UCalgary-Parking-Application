@@ -10,8 +10,9 @@
 2. Install all the necessary dependencies using the following commands:
 - 2.1. React: `npm install react`
 - 2.2. React Routers: `npm install react-router-dom@latest`
-- 2.3. Bootstrap: `npm install react-bootstrap`
+- 2.3. Bootstrap: `npm install bootstrap react-bootstrap`
 - 2.4. Bootstrap Icons: `npm install react-bootstrap-icons`
+- 2.5. Leaflet: `npm install leaflet react-leaflet`
  3. To start the React application, use the command `npm start`
  4. The application will automatically open in a new browser window, on `localhost:3000`
 
