@@ -11,6 +11,8 @@ import Signup from './pages/Signup';
 import Editprofile from './pages/Editprofile';
 import DetailedLot from './pages/Detailedlot';
 import Payment from './pages/Payment';
+// Card styles
+import './styles/card.css';
 function App() {
 
   return (
