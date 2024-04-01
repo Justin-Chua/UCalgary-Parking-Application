@@ -4,6 +4,18 @@
 - Justin Chua (30098941)
 - Chiehhan Yang (30110238)
 ## Project Setup
+### Back End
+0.1. Make sure that the latest version of MySQL is installed
+0.2. Make sure that the latest version of XAMPP is installed to host the database
+1. After installing, navigate to the back_end folder using `back_end`
+2. Install the necessary dependency using the following command:
+- 2.1. MySQLClient: `pip install mysqlclient`
+3. Ensure that models are updated using the command `python manage.py migrate`
+4. Start the backend using the command `python manage.py runserver`
+5. To view the backend, you have two options:
+- 5.1. Navigate to `127.0.0.1:8000/api/` in the browser to add values manually or view them
+- 5.2. Click on 'Admin' beside MySQL in XAMPP, and view the database on `localhost/phpmyadmin/`
+
 ### Front End
 0. Make sure that the latest version of Node.js is installed on your computer
 1. After installing Node.js, navigate to the front_end folder using `cd front_end`
@@ -16,6 +28,4 @@
  3. To start the React application, use the command `npm start`
  4. The application will automatically open in a new browser window, on `localhost:3000`
 
-### Back End
- idk yet lol
  
