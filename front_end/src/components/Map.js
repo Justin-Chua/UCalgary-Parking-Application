@@ -15,7 +15,7 @@ const Map = () => {
         iconAnchor: [10, 20]
     })
     return (
-        <Bootstrap.Container className="d-flex">
+        <Bootstrap.Container className="d-flex justify-content-center align-items-center">
             <MapContainer center={[51.07542976812476, -114.1353732868445]} zoom={15} style={{ height: '450px', width: '40vw' }}>
                 <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

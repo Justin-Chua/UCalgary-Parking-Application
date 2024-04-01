@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import * as Bootstrap from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Map from '../components/Map';
 
 function Home() {
@@ -19,9 +22,8 @@ function Home() {
     //     fetchData();
     // }, []);
     return (
-        <div>
-            <h3>This is the home page</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adip.</p>
+        <>
+            <h3 id="page-header">View UCalgary Parking</h3>
             <Map />
             {/* <h2>Todo List</h2>
                 <ul>
@@ -32,7 +34,7 @@ function Home() {
                 </li>
             ))}
             </ul> */}
-        </div>
+        </>
     );
 }
 
