@@ -1,0 +1,19 @@
+.leaflet-container {
+    width: 50%;
+    height: 50vh;
+    z-index: 1;
+}
+
+
+.homepage{
+    margin-left: 50px;
+}
+
+
+.input-group-text:hover{
+    cursor: pointer;
+}
+
+.basic-addon2{
+    cursor: pointer;
+}

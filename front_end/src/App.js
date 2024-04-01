@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import Signup from './pages/Signup';
 import Editprofile from './pages/Editprofile';
 import DetailedLot from './pages/Detailedlot';
+import Payment from './pages/Payment';
 function App() {
 
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path = "/signup" element = { <Signup /> } />
           <Route path = "/editprofile" element = { <Editprofile /> } />
           <Route path = "/detailedlot" element = { <DetailedLot /> } />
+          <Route path = "/payment" element = { <Payment /> } />
         </Routes>
       </Router>
     </>

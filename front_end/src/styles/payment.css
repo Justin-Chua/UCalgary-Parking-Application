@@ -1,0 +1,25 @@
+.paymentpage{
+    margin-top: 100px;
+    margin-left: 70px;
+    margin-right: 70px;
+}
+.paymenttitle{
+    margin-top: 20px;
+    margin-left: 50px;
+}
+
+.cardnum{
+    margin-top: 30px;
+}
+.cardexp{
+    margin-top: 30px;
+}
+
+.cardcvv{
+    margin-top: 30px;
+    block-size: 20px 50px;
+}
+.btn{
+    margin-top: 30px;
+    padding: 10px 20px;
+}
