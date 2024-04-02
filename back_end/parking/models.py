@@ -1,14 +1,35 @@
 from django.db import models
 from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator
 
-# Create your models here.
-class Todo(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField()
+class ParkingLot(models.Model):
+    lot_no = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(36)]
+    )
+    capacity = models.PositiveSmallIntegerField()
+    occupied_spaces = models.PositiveSmallIntegerField()
 
-    def __str__(self):
-        """A string representation of the model."""
-        return self.title
+class ParkingSpace(models.Model):
+    lot_no = models.ForeignKey(
+        ParkingLot, to_field='lot_no', on_delete=models.CASCADE, on_update=models.CASCADE, primary_key=True
+    )
+    zone = models.CharField(max_length=1)
+    stall_no = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(99)]
+    )
+
+class Vehicle(models.Model):
+    plate_no = models.CharField(max_length=7)
+    make = models.CharField(max_length=20)
+    model = models.charField(max_length=100)
+    lot_no = models.ForeignKey(
+        ParkingLot, to_field='lot_no', on_delete=models.SET_NULL, on_update=models.CASCADE
+    )
+
+class Color(models.Model):
+    plate_no = models.Foreignkey(
+        Vehicle, to_field='plate_no', on_delete=models.CASCADE, on_update=models.CASCADE, primary_key=True
+    )
+    vehicle_color = models.CharField(max_length=50)
     
 class UniversityMember(models.Model):
     ucid = models.PositiveIntegerField(
@@ -27,28 +48,22 @@ class Client(models.Model):
     client_ucid = models.ForeignKey(
         UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE
     )
-    # add plate number
+    plate_no = models.ForeignKey(
+        Vehicle, to_field='plate_no', on_delete=models.SET_NULL, on_update=models.CASCADE
+    )
 
 class ParkingAdmin(models.Model):
     admin_ucid = models.ForeignKey(
         UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE
     )
-    
-class Ticket(models.Model):
-    ticket_no = models.AutoField(primary_key=True)
-    # add notification
-    # add payment
-    client_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE
+
+class Patrols(models.Model):
+    lot_no = models.ForeignKey(
+        ParkingLot, to_field='lot_no', on_delete=models.CASCADE, on_update=models.CASCADE, primary_key=True
     )
     admin_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, on_update=models.CASCADE
+        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, on_update=models.CASCADE, primary_key=True
     )
-    issue_date = models.DateField()
-    due_date = models.DateField()
-    offense = models.CharField(max_length=50)
-    amount_due = models.PositiveIntegerField()
-    paid = models.BooleanField(default=False)
 
 class Notification(models.Model):
     notification_id = models.AutoField(primary_key=True)
@@ -57,24 +72,6 @@ class Notification(models.Model):
     )
     title = models.CharField(max_length=50)
     message = models.TextField(max_length=300)
-
-class Vehicle(models.Model):
-    plate_no = models.CharField(max_length=7)
-    make = models.CharField(max_length=20)
-    model = models.charField(max_length=100)
-    # add lot number
-
-class ParkingPermit(models.Model):
-    permit_no = models.AutoField(primary_key=True)
-    client_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE
-    )
-    admin_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, on_update=models.CASCADE
-    )
-    # add payment number
-    pp_issue_date = models.DateField()
-    pp_expiry_date = models.DateField()
 
 class Payment(models.Model):
     payment_no = models.AutoField(primary_key=True)
@@ -93,13 +90,40 @@ class Payment(models.Model):
     cc_expiry_year = models.PositiveSmallIntegerField(
         validators=[MinLengthValidator(2), MaxLengthValidator(2)]
     )
-
-class ParkingLot(models.Model):
-    lot_no = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(36)]
+    
+class Ticket(models.Model):
+    ticket_no = models.AutoField(primary_key=True)
+    notification_id = models.ForeignKey(
+        Notification, to_field='notification_id', on_delete=models.SET_NULL, on_update=models.CASCADE
     )
-    capacity = models.PositiveSmallIntegerField()
-    occupied_spaces = models.PositiveSmallIntegerField()
+    payment_no = models.ForeignKey(
+        Payment, to_field='payment_no', on_delete=models.SET_NULL, on_update=models.CASCADE
+    )
+    client_ucid = models.ForeignKey(
+        UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE
+    )
+    admin_ucid = models.ForeignKey(
+        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, on_update=models.CASCADE
+    )
+    issue_date = models.DateField()
+    due_date = models.DateField()
+    offense = models.CharField(max_length=50)
+    amount_due = models.PositiveIntegerField()
+    paid = models.BooleanField(default=False)
+
+class ParkingPermit(models.Model):
+    permit_no = models.AutoField(primary_key=True)
+    client_ucid = models.ForeignKey(
+        UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE
+    )
+    admin_ucid = models.ForeignKey(
+        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, on_update=models.CASCADE
+    )
+    payment_no = models.ForeignKey(
+        Payment, to_field='payment_no', on_delete=models.CASCADE, on_update=models.CASCADE
+    )
+    pp_issue_date = models.DateField()
+    pp_expiry_date = models.DateField()
 
 class Reservation(models.Model):
     lot_no = models.ForeignKey(
@@ -115,22 +139,14 @@ class Reservation(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
 
-class ParkingSpace(models.Model):
-    lot_no = models.ForeignKey(
-        ParkingLot, to_field='lot_no', on_delete=models.CASCADE, on_update=models.CASCADE, primary_key=True
-    )
-    zone = models.CharField(max_length=1)
-    stall_no = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(99)]
-    )
+# Create your models here.
+class Todo(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
 
-class Patrols(models.Model):
-    lot_no = models.ForeignKey(
-        ParkingLot, to_field='lot_no', on_delete=models.CASCADE, on_update=models.CASCADE, primary_key=True
-    )
-    admin_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, on_update=models.CASCADE, primary_key=True
-    )
+    def __str__(self):
+        """A string representation of the model."""
+        return self.title
 
 
 
