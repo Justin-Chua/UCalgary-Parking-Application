@@ -5,6 +5,10 @@ class ParkingLot(models.Model):
     lot_no = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(36)]
     )
+    # x coordinate
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    # y coordinate
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
     capacity = models.PositiveSmallIntegerField()
     occupied_spaces = models.PositiveSmallIntegerField()
 
@@ -108,7 +112,7 @@ class Ticket(models.Model):
     issue_date = models.DateField()
     due_date = models.DateField()
     offense = models.CharField(max_length=50)
-    amount_due = models.PositiveIntegerField()
+    amount_due = models.PositiveSmallIntegerField()
     paid = models.BooleanField(default=False)
 
 class ParkingPermit(models.Model):
@@ -124,6 +128,7 @@ class ParkingPermit(models.Model):
     )
     pp_issue_date = models.DateField()
     pp_expiry_date = models.DateField()
+    pp_amount_due = models.PositiveSmallIntegerField()
 
 class Reservation(models.Model):
     lot_no = models.ForeignKey(
@@ -138,6 +143,7 @@ class Reservation(models.Model):
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
+    res_amount_due = models.PositiveSmallIntegerField()
 
 # Create your models here.
 class Todo(models.Model):
