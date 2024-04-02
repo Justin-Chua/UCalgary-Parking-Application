@@ -3,7 +3,7 @@ from django.core.validators import MinLengthValidator, MaxLengthValidator, MinVa
 
 class ParkingLot(models.Model):
     lot_no = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(36)]
+        validators=[MinValueValidator(1), MaxValueValidator(36)], primary_key=True, unique=True
     )
     # x coordinate
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
@@ -13,8 +13,8 @@ class ParkingLot(models.Model):
     occupied_spaces = models.PositiveSmallIntegerField()
 
 class ParkingSpace(models.Model):
-    lot_no = models.ForeignKey(
-        ParkingLot, to_field='lot_no', on_delete=models.CASCADE, on_update=models.CASCADE, primary_key=True
+    lot_no = models.OneToOneField(
+        ParkingLot, to_field='lot_no', on_delete=models.CASCADE
     )
     zone = models.CharField(max_length=1)
     stall_no = models.PositiveSmallIntegerField(
@@ -22,26 +22,27 @@ class ParkingSpace(models.Model):
     )
 
 class Vehicle(models.Model):
-    plate_no = models.CharField(max_length=7)
+    plate_no = models.CharField(max_length=7, primary_key=True, unique=True)
     make = models.CharField(max_length=20)
-    model = models.charField(max_length=100)
-    lot_no = models.ForeignKey(
-        ParkingLot, to_field='lot_no', on_delete=models.SET_NULL, on_update=models.CASCADE
+    model = models.CharField(max_length=100)
+    lot_no = models.OneToOneField(
+        ParkingLot, to_field='lot_no', on_delete=models.SET_NULL, null=True
     )
 
 class Color(models.Model):
-    plate_no = models.Foreignkey(
-        Vehicle, to_field='plate_no', on_delete=models.CASCADE, on_update=models.CASCADE, primary_key=True
+    plate_no = models.OneToOneField(
+        Vehicle, to_field='plate_no', on_delete=models.CASCADE, primary_key=True
     )
     vehicle_color = models.CharField(max_length=50)
     
 class UniversityMember(models.Model):
     ucid = models.PositiveIntegerField(
         primary_key=True,
-        validators=[MinLengthValidator(8), MaxLengthValidator(8)]
+        validators=[MinLengthValidator(8), MaxLengthValidator(8)],
+        unique=True
     )
     name = models.CharField(max_length=200)
-    email = models.EmailField(max_length=254)
+    email = models.EmailField(max_length=254, unique=True)
     password = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
     phone_no = models.PositiveIntegerField(
@@ -49,38 +50,43 @@ class UniversityMember(models.Model):
     )
 
 class Client(models.Model):
-    client_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE
+    client_ucid = models.OneToOneField(
+        UniversityMember, to_field='ucid', on_delete=models.CASCADE, primary_key=True
     )
     plate_no = models.ForeignKey(
-        Vehicle, to_field='plate_no', on_delete=models.SET_NULL, on_update=models.CASCADE
+        Vehicle, to_field='plate_no', on_delete=models.SET_NULL, null=True
     )
 
 class ParkingAdmin(models.Model):
-    admin_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE
+    admin_ucid = models.OneToOneField(
+        UniversityMember, to_field='ucid', on_delete=models.CASCADE, primary_key=True
     )
 
 class Patrols(models.Model):
-    lot_no = models.ForeignKey(
-        ParkingLot, to_field='lot_no', on_delete=models.CASCADE, on_update=models.CASCADE, primary_key=True
+    lot_no = models.OneToOneField(
+        ParkingLot, to_field='lot_no', on_delete=models.CASCADE
     )
-    admin_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, on_update=models.CASCADE, primary_key=True
+    admin_ucid = models.OneToOneField(
+        ParkingAdmin, to_field='admin_ucid', on_delete=models.CASCADE
     )
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['lot_no', 'admin_ucid'], name='patrols_primary_keys')
+        ]
 
 class Notification(models.Model):
     notification_id = models.AutoField(primary_key=True)
     client_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE
+        Client, to_field='client_ucid', on_delete=models.CASCADE
     )
     title = models.CharField(max_length=50)
     message = models.TextField(max_length=300)
 
 class Payment(models.Model):
-    payment_no = models.AutoField(primary_key=True)
+    payment_no = models.AutoField(primary_key=True, unique=True)
     client_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE)
+        Client, to_field='client_ucid', on_delete=models.CASCADE
+    )
     cc_holder = models.CharField(max_length=200)
     cc_number = models.PositiveIntegerField(
         validators=[MinLengthValidator(12), MaxLengthValidator(19)]
@@ -96,18 +102,18 @@ class Payment(models.Model):
     )
     
 class Ticket(models.Model):
-    ticket_no = models.AutoField(primary_key=True)
+    ticket_no = models.AutoField(primary_key=True, unique=True)
     notification_id = models.ForeignKey(
-        Notification, to_field='notification_id', on_delete=models.SET_NULL, on_update=models.CASCADE
+        Notification, to_field='notification_id', on_delete=models.SET_NULL, null=True
     )
     payment_no = models.ForeignKey(
-        Payment, to_field='payment_no', on_delete=models.SET_NULL, on_update=models.CASCADE
+        Payment, to_field='payment_no', on_delete=models.SET_NULL, null=True
     )
     client_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE
+        Client, to_field='client_ucid', on_delete=models.CASCADE
     )
     admin_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, on_update=models.CASCADE
+        ParkingAdmin, to_field='admin_ucid', on_delete=models.SET_NULL, null=True
     )
     issue_date = models.DateField()
     due_date = models.DateField()
@@ -116,15 +122,15 @@ class Ticket(models.Model):
     paid = models.BooleanField(default=False)
 
 class ParkingPermit(models.Model):
-    permit_no = models.AutoField(primary_key=True)
+    permit_no = models.AutoField(primary_key=True, unique=True)
     client_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.CASCADE, on_update=models.CASCADE
+        Client, to_field='client_ucid', on_delete=models.CASCADE
     )
     admin_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, on_update=models.CASCADE
+        ParkingAdmin, to_field='admin_ucid', on_delete=models.SET_NULL, null=True
     )
     payment_no = models.ForeignKey(
-        Payment, to_field='payment_no', on_delete=models.CASCADE, on_update=models.CASCADE
+        Payment, to_field='payment_no', on_delete=models.CASCADE
     )
     pp_issue_date = models.DateField()
     pp_expiry_date = models.DateField()
@@ -132,18 +138,22 @@ class ParkingPermit(models.Model):
 
 class Reservation(models.Model):
     lot_no = models.ForeignKey(
-        ParkingLot, to_field='lot_no', on_delete=models.CASCADE, on_update=models.CASCADE, primary_key=True
+        ParkingLot, to_field='lot_no', on_delete=models.CASCADE
     )
     client_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, on_update=models.CASCADE, primary_key=True
+        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, null=True
     )
     payment_no = models.ForeignKey(
-        Payment, to_field='payment_no', on_delete=models.CASCADE, on_update=models.CASCADE
+        Payment, to_field='payment_no', on_delete=models.CASCADE
     )
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     res_amount_due = models.PositiveSmallIntegerField()
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['lot_no', 'client_ucid'], name='reservation_primary_keys')
+        ]
 
 # Create your models here.
 class Todo(models.Model):

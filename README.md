@@ -9,11 +9,12 @@
 1. After installing, navigate to the back_end folder using `back_end`
 2. Install the necessary dependency using the following command:
     - 2.1. MySQLClient: `pip install mysqlclient`
-3. Ensure that models are updated using the command `python manage.py migrate`
-4. Start the backend using the command `python manage.py runserver`
-5. To view the backend, you have two options:
-    - 5.1. Navigate to `127.0.0.1:8000/api/` in the browser to add values manually or view them
-    - 5.2. Click on 'Admin' beside MySQL in XAMPP, and view the database on `localhost/phpmyadmin/`
+3. Ensure that XAMPP is open, and Apache and MySQL are running on port 3306
+4. Ensure that models are updated using the command `python manage.py migrate`
+5. Start the backend using the command `python manage.py runserver`
+6. To view the backend, you have two options:
+    - 6.1. Navigate to `127.0.0.1:8000/api/` in the browser to add values manually or view them
+    - 6.2. Click on 'Admin' beside MySQL in XAMPP, and view the database on `localhost/phpmyadmin/`
 
 ### Front End
 0. Make sure that the latest version of Node.js is installed on your computer
