@@ -1,6 +1,8 @@
 # todos/serializers.py
 from rest_framework import serializers
 from .models import Todo, UniversityMember
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 
 
 class TodoSerializer(serializers.ModelSerializer):
