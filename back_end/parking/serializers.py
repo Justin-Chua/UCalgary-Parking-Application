@@ -1,6 +1,6 @@
 # todos/serializers.py
 from rest_framework import serializers
-from .models import Todo
+from .models import Todo, UniversityMember
 
 
 class TodoSerializer(serializers.ModelSerializer):
@@ -11,3 +11,9 @@ class TodoSerializer(serializers.ModelSerializer):
             'description',
         )
         model = Todo
+        
+        
+class UniversityMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UniversityMember
+        fields = '__all__' 

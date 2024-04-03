@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator
+from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator, RegexValidator
 
 class ParkingLot(models.Model):
     lot_no = models.PositiveSmallIntegerField(
@@ -36,17 +36,27 @@ class Color(models.Model):
     vehicle_color = models.CharField(max_length=50)
     
 class UniversityMember(models.Model):
-    ucid = models.PositiveIntegerField(
+    ucid = models.CharField(
         primary_key=True,
-        validators=[MinLengthValidator(8), MaxLengthValidator(8)],
+        validators=[
+            MinLengthValidator(8),
+            MaxLengthValidator(8),
+            RegexValidator(regex='^\d{8}$', message="UCID must be exactly 8 digits.")
+        ],
+        max_length=8,
         unique=True
     )
     name = models.CharField(max_length=200)
     email = models.EmailField(max_length=254, unique=True)
     password = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
-    phone_no = models.PositiveIntegerField(
-        validators=[MinLengthValidator(10), MaxLengthValidator(10)]
+    phone_no = models.CharField(
+        validators=[
+            MinLengthValidator(10),
+            MaxLengthValidator(10),
+            RegexValidator(regex='^\d{10}$', message="Phone number must be exactly 10 digits.")
+        ],
+        max_length=10
     )
 
 class Client(models.Model):
