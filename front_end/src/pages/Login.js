@@ -1,32 +1,44 @@
-// Import necessary components and assets
 import React, { useState } from 'react';
-import { Form, Button, Container, Alert } from 'react-bootstrap'; // Import Alert component for error messages
+import { Form, Button, Container, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
 
 function Login() {
     const [ucid, setUCID] = useState('');
     const [password, setPassword] = useState('');
-    const [ucidError, setUCIDError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
+    const [errors, setErrors] = useState({});
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // Define setIsLoggedIn state variable
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        
+        // Validate UCID length
         if (ucid.length !== 8) {
-            setUCIDError('Please enter a Valid 8 digit UCID');
-        } else {
-            setUCIDError('');
-            if (password !== 'correctpassword') {
-                setPasswordError('Incorrect password');
-            } else {
-                setPasswordError('');
+            setErrors({ ucidError: 'UCID must be exactly 8 digits long' });
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://127.0.0.1:8000/api/login/', { ucid, password });
+            if (response.status === 200) {
+                // Store token in localStorage
+                localStorage.setItem('token', response.data.token);
+                // Update isLoggedIn state
+                setIsLoggedIn(true);
+                // Redirect to the home page
                 window.location.href = '/';
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                setErrors({ passwordError: 'Invalid credentials' });
+            } else {
+                console.error('Error during login:', error);
             }
         }
     };
 
     return (
         <div>
-            
             <div style={{ backgroundColor: '#e40c04', height: '7px' }}></div>
             <div style={{ borderTop: '30px solid #8c847c', borderBottom: '30px solid #8c847c' }}>
                 <Container className="pt-5 pb-5">
@@ -40,8 +52,8 @@ function Login() {
                                 onChange={(e) => setUCID(e.target.value)}
                                 className="mb-3"
                             />
-                            {ucidError && <Alert variant="danger">{ucidError}</Alert>}
                         </Form.Group>
+                        {errors.ucidError && <Alert variant="danger">{errors.ucidError}</Alert>}
 
                         <Form.Group controlId="loginBasicPassword">
                             <Form.Label>Password</Form.Label>
@@ -52,8 +64,8 @@ function Login() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="mb-3"
                             />
-                            {passwordError && <Alert variant="danger">{passwordError}</Alert>}
                         </Form.Group>
+                        {errors.passwordError && <Alert variant="danger">{errors.passwordError}</Alert>}
 
                         <Button variant="danger" type="submit">
                             Submit
