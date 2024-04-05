@@ -22,7 +22,7 @@ function Login() {
             const response = await axios.post('http://127.0.0.1:8000/api/login/', { ucid, password });
             if (response.status === 200) {
                 // Store token in localStorage
-                localStorage.setItem('token', response.data.token);
+                sessionStorage.setItem('token', response.data.token);
                 // Update isLoggedIn state
                 setIsLoggedIn(true);
                 // Redirect to the home page
