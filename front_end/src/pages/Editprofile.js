@@ -13,8 +13,8 @@ function EditProfile() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (phoneNo.length !== 9) {
-            setErrorMessage('Please enter a 9-digit phone number.');
+        if (phoneNo.length !== 10) {
+            setErrorMessage('Please enter a 10-digit phone number.');
             return;
         }
         if (plateNo.length > 7) {

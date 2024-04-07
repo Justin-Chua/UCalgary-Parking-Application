@@ -22,11 +22,9 @@ function Login() {
             if (response.status === 200) {
                 const token = response.data.token;
                 console.log('Token received:', token);
-                sessionStorage.setItem('token', token);
+                localStorage.setItem('token', token); // Store token in local storage
                 // Redirect to home page after successful login
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 2000); // 2 seconds delay before redirecting
+                window.location.href = '/';
             }
         } catch (error) {
             if (error.response && error.response.status === 401) {
@@ -43,33 +41,36 @@ function Login() {
             <div style={{ borderTop: '30px solid #8c847c', borderBottom: '30px solid #8c847c' }}>
                 <Container className="pt-5 pb-5">
                     <Form onSubmit={handleSubmit}>
-                        <Form.Group controlId="loginBasicUCID">
+                        <Form.Group controlId="loginBasicUCID" className="mb-3">
                             <Form.Label>UCID</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Enter UCID"
                                 value={ucid}
                                 onChange={(e) => setUCID(e.target.value)}
-                                className="mb-3"
                             />
+                            {errors.ucidError && <Alert variant="danger">{errors.ucidError}</Alert>}
                         </Form.Group>
-                        {errors.ucidError && <Alert variant="danger">{errors.ucidError}</Alert>}
 
-                        <Form.Group controlId="loginBasicPassword">
+                        <Form.Group controlId="loginBasicPassword" className="mb-3">
                             <Form.Label>Password</Form.Label>
                             <Form.Control
                                 type="password"
                                 placeholder="Enter Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="mb-3"
                             />
+                            {errors.passwordError && <Alert variant="danger">{errors.passwordError}</Alert>}
                         </Form.Group>
-                        {errors.passwordError && <Alert variant="danger">{errors.passwordError}</Alert>}
 
-                        <Button variant="danger" type="submit">
-                            Submit
-                        </Button>
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                            <Button variant="danger" type="submit">
+                                Submit
+                            </Button>
+                            <Button variant="light" href="/signup">
+                                Signup
+                            </Button>
+                        </div>
                     </Form>
                 </Container>
             </div>

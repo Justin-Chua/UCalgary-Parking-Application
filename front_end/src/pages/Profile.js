@@ -1,22 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Alert, Button } from 'react-bootstrap'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
 
 function Profile() {
-    const [ucid, setUCID] = useState('');
-    const [fullName, setFullName] = useState('');
-    const [email, setEmail] = useState('');
-    const [address, setAddress] = useState('');
-    const [phoneNo, setPhoneNo] = useState('');
+    const [profileData, setProfileData] = useState(null);
     const [error, setError] = useState(null); 
-    const [profileUpdated, setProfileUpdated] = useState(false);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const token = sessionStorage.getItem('token');
-                console.log('Token:', token); // Log the token retrieved from session storage
+                const token = localStorage.getItem('token');
                 if (!token) {
                     console.error('Token not found');
                     return;
@@ -27,13 +21,7 @@ function Profile() {
                         'Content-Type': 'application/json'
                     }
                 });
-                console.log('Request:', response); // Log the request being sent
-                const userData = response.data;
-                setUCID(userData.ucid);
-                setFullName(userData.fullName);
-                setEmail(userData.email);
-                setAddress(userData.address);
-                setPhoneNo(userData.phoneNo);
+                setProfileData(response.data);
             } catch (error) {
                 console.error('Error fetching user information:', error);
                 setError('Error fetching user information. Please try again later.');
@@ -43,22 +31,17 @@ function Profile() {
         fetchUserInfo();
     }, []);
 
-    useEffect(() => {
-        // Check if profileUpdated state is true
-        // If true, set a timeout to reset the state after 3 seconds
-        if (profileUpdated) {
-            const timeout = setTimeout(() => {
-                setProfileUpdated(false);
-            }, 3000);
-
-            // Clear the timeout when the component unmounts or profileUpdated state changes
-            return () => clearTimeout(timeout);
-        }
-    }, [profileUpdated]);
-
     const handleEditProfile = () => {
-        window.location.href = '/editprofile';
+        window.location.href = '/editprofile'; // Redirect to edit profile page
     };
+
+    if (error) {
+        return <Alert variant="danger">{error}</Alert>;
+    }
+
+    if (!profileData) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <div>
@@ -68,14 +51,12 @@ function Profile() {
                 <Row className="justify-content-center align-items-center" style={{ height: '55vh' }}>
                     <Col md={6}>
                         <h1 className="text-center mb-4">Profile</h1>
-                        {error && <Alert variant="danger">{error}</Alert>}
-                        <p>UCID: {ucid}</p>
-                        <p>Full Name: {fullName}</p>
-                        <p>Email: {email}</p>
-                        <p>Address: {address}</p>
-                        <p>Phone Number: {phoneNo}</p>
+                        <p>UCID: {profileData.ucid}</p>
+                        <p>Full Name: {profileData.name}</p>
+                        <p>Email: {profileData.email}</p>
+                        <p>Address: {profileData.address}</p>
+                        <p>Phone Number: {profileData.phone_no}</p>
                         <Button variant="danger" onClick={handleEditProfile}>Edit Profile</Button>
-                        {profileUpdated && <Alert variant="success">Profile Updated</Alert>}
                     </Col>
                 </Row>
             </Container>
