@@ -35,7 +35,12 @@ function Signup() {
         if (valid) {
             // Prepare the data
             const userData = {
-                ucid, name, email, password, address, phone_no: phoneNo
+                ucid,
+                name,
+                email,
+                password,
+                address,
+                phone_no: phoneNo // Ensure consistency with backend field name
             };
             
             // Send data to your backend
@@ -46,7 +51,7 @@ function Signup() {
                     window.location.href = '/'; // Or handle redirection based on your needs
                 })
                 .catch(error => {
-                    console.error('There was an error!', error);
+                    console.error('Error creating User:', error);
                     // Optionally, handle errors, e.g., show an error message
                 });
         }

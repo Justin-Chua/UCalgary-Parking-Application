@@ -8,13 +8,21 @@ function Header() {
 
     useEffect(() => {
         // Check if user is logged in
-        const token = sessionStorage.getItem('token');
+        const token = localStorage.getItem('token');
         setIsLoggedIn(!!token);
     }, []);
 
     const handleLogout = () => {
-        // Clear token from localStorage and set isLoggedIn to false
-        sessionStorage.removeItem('token');
+        // Clear access token from localStorage
+        localStorage.removeItem('token');
+        
+        // Clear refresh token from sessionStorage if it exists
+        const refreshToken = sessionStorage.getItem('refreshToken');
+        if (refreshToken) {
+            sessionStorage.removeItem('refreshToken');
+        }
+        
+        // Update isLoggedIn state to false
         setIsLoggedIn(false);
     };
 

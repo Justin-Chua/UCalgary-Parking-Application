@@ -7,7 +7,6 @@ function Login() {
     const [ucid, setUCID] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Define setIsLoggedIn state variable
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -17,16 +16,17 @@ function Login() {
             setErrors({ ucidError: 'UCID must be exactly 8 digits long' });
             return;
         }
-
+    
         try {
             const response = await axios.post('http://127.0.0.1:8000/api/login/', { ucid, password });
             if (response.status === 200) {
-                // Store token in localStorage
-                sessionStorage.setItem('token', response.data.token);
-                // Update isLoggedIn state
-                setIsLoggedIn(true);
-                // Redirect to the home page
-                window.location.href = '/';
+                const token = response.data.token;
+                console.log('Token received:', token);
+                sessionStorage.setItem('token', token);
+                // Redirect to home page after successful login
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000); // 2 seconds delay before redirecting
             }
         } catch (error) {
             if (error.response && error.response.status === 401) {

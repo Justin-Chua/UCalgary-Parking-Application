@@ -7,9 +7,13 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
 from .models import Todo, UniversityMember
-from .serializers import TodoSerializer, UniversityMemberSerializer
-
+from django.contrib.auth.hashers import make_password
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.contrib.auth.models import User
+from .authentication import UCIDAuthenticationBackend
+from .serializers import TodoSerializer, UniversityMemberSerializer, UserSerializer
 
 class ListTodo(generics.ListCreateAPIView):
     queryset = Todo.objects.all()
@@ -23,33 +27,81 @@ class DetailTodo(generics.RetrieveUpdateDestroyAPIView):
 
 class SignupView(APIView):
     def post(self, request, format=None):
-        serializer = UniversityMemberSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Extract user data from the request
+        user_data = {
+            'username': request.data.get('email'),  # Assuming email is unique and can be used as username
+            'email': request.data.get('email'),
+            'password': make_password(request.data.get('password')),  # Hash the password
+        }
+        user_serializer = UserSerializer(data=user_data)
+        if user_serializer.is_valid():
+            # Save the user instance
+            user = user_serializer.save()
+            # Extract university member data from the request
+            university_member_data = {
+                'ucid': request.data.get('ucid'),
+                'name': request.data.get('name'),
+                'email': request.data.get('email'),
+                'password': user.password,  # Store hashed password
+                'address': request.data.get('address'),
+                'phone_no': request.data.get('phone_no'),
+                'user': user.id
+            }
+            university_member_serializer = UniversityMemberSerializer(data=university_member_data)
+            if university_member_serializer.is_valid():
+                # Save the university member instance
+                university_member_serializer.save()
+                return Response(university_member_serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                # Delete the user instance if university member creation fails
+                user.delete()
+                # Debug: Print serializer errors
+                print("University Member Serializer Errors:", university_member_serializer.errors)
+                return Response(university_member_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # Debug: Print serializer errors
+            print("User Serializer Errors:", user_serializer.errors)
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 class LoginView(APIView):
-    def post(self, request, format=None):
-        data = request.data
-        ucid = data.get('ucid')
-        password = data.get('password')
-        
-        # Retrieve the user from the database based on the UCID
-        try:
-            user = UniversityMember.objects.get(ucid=ucid)
-        except UniversityMember.DoesNotExist:
-            user = None
-        
-        # Check if the user exists and if the password matches
-        if user is not None and user.password == password:
-            # Set session variable to indicate user is logged in
-            request.session['ucid'] = user.ucid
-            return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
+    def post(self, request):
+        # Retrieve credentials from request
+        ucid = request.data.get('ucid')
+        password = request.data.get('password')
+
+        print("Received UCID:", ucid)
+        print("Received Password:", password)
+
+        # Authenticate user using custom backend
+        user = authenticate(request, ucid=ucid, password=password)
+
+        if user is not None:
+            # Generate token for the authenticated user
+            token = RefreshToken.for_user(user)
+            print("Token generated:", token)
+            return Response({'token': str(token.access_token)})
         else:
-            # Authentication failed
+            print("Authentication failed for UCID:", ucid)
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+
+        
+
+
+class ProfileView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        try:
+            university_member = UniversityMember.objects.get(user=user)
+            serializer = UniversityMemberSerializer(university_member)
+            return Response(serializer.data)
+        except UniversityMember.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         
         

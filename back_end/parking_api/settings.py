@@ -55,7 +55,13 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'USER_ID_FIELD': 'ucid',
+    'USER_ID_FIELD': 'username',
 }
+
+AUTHENTICATION_BACKENDS = [
+    'parking.authentication.UCIDAuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # new

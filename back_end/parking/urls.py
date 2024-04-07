@@ -7,4 +7,5 @@ urlpatterns = [
     path('<int:pk>/', views.DetailTodo.as_view()),
     path('signup/', views.SignupView.as_view(), name='signup'),
     path('login/', views.LoginView.as_view(), name='login'),
+    path('profile/', views.ProfileView.as_view(), name='profile'),
 ]

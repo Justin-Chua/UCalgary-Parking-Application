@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator, RegexValidator
 
 class ParkingLot(models.Model):
@@ -36,6 +38,7 @@ class Color(models.Model):
     vehicle_color = models.CharField(max_length=50)
     
 class UniversityMember(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default=None)
     ucid = models.CharField(
         primary_key=True,
         validators=[

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Alert, Button } from 'react-bootstrap'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../styles/header.css';
+import axios from 'axios'; // Import Axios
 
 function Profile() {
     const [ucid, setUCID] = useState('');
@@ -9,27 +9,31 @@ function Profile() {
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
     const [phoneNo, setPhoneNo] = useState('');
-    const [plateNo, setPlateNo] = useState('');
     const [error, setError] = useState(null); 
     const [profileUpdated, setProfileUpdated] = useState(false);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/', {
-                    method: 'GET',
+                const token = sessionStorage.getItem('token');
+                console.log('Token:', token); // Log the token retrieved from session storage
+                if (!token) {
+                    console.error('Token not found');
+                    return;
+                }
+                const response = await axios.get('http://127.0.0.1:8000/api/profile/', {
                     headers: {
-                        'Authorization': 'Bearer your_token_here',
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
-                const userData = await response.json();
+                console.log('Request:', response); // Log the request being sent
+                const userData = response.data;
                 setUCID(userData.ucid);
                 setFullName(userData.fullName);
                 setEmail(userData.email);
                 setAddress(userData.address);
                 setPhoneNo(userData.phoneNo);
-                setPlateNo(userData.plateNo);
             } catch (error) {
                 console.error('Error fetching user information:', error);
                 setError('Error fetching user information. Please try again later.');
@@ -70,7 +74,6 @@ function Profile() {
                         <p>Email: {email}</p>
                         <p>Address: {address}</p>
                         <p>Phone Number: {phoneNo}</p>
-                        <p>License Plate: {plateNo}</p>
                         <Button variant="danger" onClick={handleEditProfile}>Edit Profile</Button>
                         {profileUpdated && <Alert variant="success">Profile Updated</Alert>}
                     </Col>
