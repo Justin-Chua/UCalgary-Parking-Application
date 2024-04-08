@@ -1,48 +1,47 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap'; 
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
+import axios from 'axios';
 
 function EditProfile() {
-    const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
     const [phoneNo, setPhoneNo] = useState('');
-    const [plateNo, setPlateNo] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (phoneNo.length !== 10) {
-            setErrorMessage('Please enter a 10-digit phone number.');
+        if (!address && !phoneNo && !password) {
+            setErrorMessage('Please provide data for updating profile.');
             return;
         }
-        if (plateNo.length > 7) {
-            setErrorMessage('License plates are a maximum of 7 characters long.');
+
+        if (phoneNo && phoneNo.length !== 10) {
+            setErrorMessage('Phone number must be exactly 10 digits long.');
             return;
         }
 
         try {
-            // Perform the update profile action here
-            const response = await fetch('http://127.0.0.1:8000/api/', {
-                method: 'POST',
+            const token = localStorage.getItem('token');
+            const response = await axios.post('http://127.0.0.1:8000/api/profile/', {
+                address,
+                phoneNo,
+                password
+            }, {
                 headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email,
-                    address,
-                    phoneNo,
-                    plateNo,
-                    password,
-                }),
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
 
-            if (response.ok) {
-                // Redirect to the profile page
-                window.location.href = '/profile';
+            if (response.status === 200) {
+                setSuccessMessage('Information successfully updated');
+                setTimeout(() => {
+                    setSuccessMessage('');
+                    window.location.href = '/profile';
+                }, 3000);
             } else {
-                // Handle error response
                 setErrorMessage('Failed to update profile.');
             }
         } catch (error) {
@@ -63,16 +62,9 @@ function EditProfile() {
                 <Row className="justify-content-center">
                     <Col md={6}>
                         <h1 className="text-center mb-4">Edit Profile</h1>
+                        {successMessage && <Alert variant="success">{successMessage}</Alert>}
+                        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
                         <Form onSubmit={handleSubmit}>
-                            <Form.Group controlId="formEmail">
-                                <Form.Label>Email Address</Form.Label>
-                                <Form.Control
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="Enter email address"
-                                />
-                            </Form.Group>
                             <Form.Group controlId="formAddress">
                                 <Form.Label>Address</Form.Label>
                                 <Form.Control
@@ -91,16 +83,6 @@ function EditProfile() {
                                     placeholder="Enter phone number"
                                 />
                                 {errorMessage && phoneNo.length !== 9 && <Alert variant="danger">{errorMessage}</Alert>}
-                            </Form.Group>
-                            <Form.Group controlId="formPlateNo">
-                                <Form.Label>License Plate</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={plateNo}
-                                    onChange={(e) => setPlateNo(e.target.value)}
-                                    placeholder="Enter license plate"
-                                />
-                                {plateNo.length > 7 && <Alert variant="danger">License plates are a maximum of 7 characters long.</Alert>}
                             </Form.Group>
                             <Form.Group controlId="formPassword">
                                 <Form.Label>New Password</Form.Label>

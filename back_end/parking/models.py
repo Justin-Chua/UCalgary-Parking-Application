@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator, RegexValidator
+from django.core.exceptions import ValidationError
 
 class ParkingLot(models.Model):
     lot_no = models.PositiveSmallIntegerField(
@@ -61,6 +62,19 @@ class UniversityMember(models.Model):
         ],
         max_length=10
     )
+    
+    def clean(self):
+        if self.phone_no and len(self.phone_no) != 10:
+            raise ValidationError('Phone number must be exactly 10 digits long.')
+
+    def update_profile(self, address=None, phone_no=None, password=None):
+        if address:
+            self.address = address
+        if phone_no:
+            self.phone_no = phone_no
+        if password:
+            self.password = make_password(password)
+        self.save()
 
 class Client(models.Model):
     client_ucid = models.OneToOneField(

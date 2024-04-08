@@ -13,6 +13,7 @@ from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
 from .authentication import UCIDAuthenticationBackend
+from rest_framework.exceptions import ValidationError
 from .serializers import TodoSerializer, UniversityMemberSerializer, UserSerializer
 
 class ListTodo(generics.ListCreateAPIView):
@@ -91,18 +92,27 @@ class LoginView(APIView):
 
 
 class ProfileView(APIView):
-    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        try:
-            university_member = UniversityMember.objects.get(user=user)
-            serializer = UniversityMemberSerializer(university_member)
-            return Response(serializer.data)
-        except UniversityMember.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        university_member = UniversityMember.objects.get(user=request.user)
+        serializer = UniversityMemberSerializer(university_member)
+        return Response(serializer.data)
 
+    def post(self, request):
+        university_member = UniversityMember.objects.get(user=request.user)
+        address = request.data.get('address')
+        phone_no = request.data.get('phoneNo')
+        password = request.data.get('password')
+
+        if not (address or phone_no or password):
+            raise ValidationError('No data provided for updating profile.')
+
+        if phone_no and len(phone_no) != 10:
+            raise ValidationError('Phone number must be exactly 10 digits long.')
+
+        university_member.update_profile(address=address, phone_no=phone_no, password=password)
+        return Response({'message': 'Profile updated successfully'})
         
    
 class LogoutView(APIView):
