@@ -8,13 +8,15 @@ from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from .models import Todo, UniversityMember
+from .models import Todo, UniversityMember, Vehicle, Color  # Import Color model
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
 from .authentication import UCIDAuthenticationBackend
 from rest_framework.exceptions import ValidationError
-from .serializers import TodoSerializer, UniversityMemberSerializer, UserSerializer
+from django.shortcuts import get_object_or_404
+from .serializers import TodoSerializer, UniversityMemberSerializer, UserSerializer, VehicleSerializer
+
 
 class ListTodo(generics.ListCreateAPIView):
     queryset = Todo.objects.all()
@@ -124,3 +126,57 @@ class LogoutView(APIView):
             return Response({'message': 'Logout successful'}, status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+
+class AddVehicleView(APIView):
+    def post(self, request, *args, **kwargs):
+        vehicle_serializer = VehicleSerializer(data=request.data)
+        color_name = request.data.get('color', '').lower()  # Extract color from request data
+        
+        # Check if the color is valid
+        if not is_valid_color(color_name):
+            return Response({'error': 'Invalid color.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validate vehicle data
+        if vehicle_serializer.is_valid():
+            # Save vehicle
+            vehicle = vehicle_serializer.save(owner=request.user)
+            
+            # Save or update color
+            color, _ = Color.objects.get_or_create(plate_no=vehicle, defaults={'vehicle_color': color_name})
+            if not _:
+                color.vehicle_color = color_name
+                color.save()
+            
+            # Return response
+            vehicle_data = vehicle_serializer.data
+            vehicle_data['color'] = color_name
+            return Response(vehicle_data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(vehicle_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def is_valid_color(color_name):
+    acceptable_colors = {'black', 'white', 'red', 'blue', 'green', 'yellow', 'orange'}
+    return color_name in acceptable_colors
+
+
+
+class ViewVehicleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        vehicles = Vehicle.objects.filter(owner=request.user)
+        serializer = VehicleSerializer(vehicles, many=True)
+        return Response(serializer.data)
+
+class DeleteVehicleView(APIView):
+    def delete(self, request):
+        try:
+            vehicle = Vehicle.objects.get(owner=request.user)
+            vehicle.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Vehicle.DoesNotExist:
+            return Response("Vehicle not found", status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

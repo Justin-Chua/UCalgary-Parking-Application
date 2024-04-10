@@ -31,6 +31,8 @@ class Vehicle(models.Model):
     lot_no = models.OneToOneField(
         ParkingLot, to_field='lot_no', on_delete=models.SET_NULL, null=True
     )
+    owner = models.ForeignKey(User, related_name='vehicles', on_delete=models.CASCADE, default=None)
+
 
 class Color(models.Model):
     plate_no = models.OneToOneField(
