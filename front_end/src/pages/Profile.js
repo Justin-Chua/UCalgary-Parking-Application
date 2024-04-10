@@ -32,7 +32,7 @@ function Profile() {
     }, []);
 
     const handleEditProfile = () => {
-        window.location.href = '/editprofile'; // Redirect to edit profile page
+        window.location.href = '/editprofile'; 
     };
 
     if (error) {

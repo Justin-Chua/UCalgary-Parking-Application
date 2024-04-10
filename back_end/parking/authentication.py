@@ -9,12 +9,12 @@ class UCIDAuthenticationBackend(ModelBackend):
         try:
             university_member = UniversityMember.objects.get(ucid=ucid)
             print("User found:", university_member)
-            # Print hashed password for comparison
+            
             print("Hashed Password from Database:", university_member.password)
-            # Check if the password matches
+            
             if university_member and check_password(password, university_member.password):
                 print("Authentication successful for UCID:", ucid)
-                return university_member.user  # Return the associated user
+                return university_member.user  
         except UniversityMember.DoesNotExist:
             print("User not found for UCID:", ucid)
             return None

@@ -28,57 +28,57 @@ class DetailTodo(generics.RetrieveUpdateDestroyAPIView):
 
 class SignupView(APIView):
     def post(self, request, format=None):
-        # Extract user data from the request
+        
         user_data = {
-            'username': request.data.get('email'),  # Assuming email is unique and can be used as username
+            'username': request.data.get('email'),  
             'email': request.data.get('email'),
-            'password': make_password(request.data.get('password')),  # Hash the password
+            'password': make_password(request.data.get('password')),  
         }
         user_serializer = UserSerializer(data=user_data)
         if user_serializer.is_valid():
-            # Save the user instance
+            
             user = user_serializer.save()
-            # Extract university member data from the request
+           
             university_member_data = {
                 'ucid': request.data.get('ucid'),
                 'name': request.data.get('name'),
                 'email': request.data.get('email'),
-                'password': user.password,  # Store hashed password
+                'password': user.password,  
                 'address': request.data.get('address'),
                 'phone_no': request.data.get('phone_no'),
                 'user': user.id
             }
             university_member_serializer = UniversityMemberSerializer(data=university_member_data)
             if university_member_serializer.is_valid():
-                # Save the university member instance
+               
                 university_member_serializer.save()
                 return Response(university_member_serializer.data, status=status.HTTP_201_CREATED)
             else:
-                # Delete the user instance if university member creation fails
+               
                 user.delete()
-                # Debug: Print serializer errors
+               
                 print("University Member Serializer Errors:", university_member_serializer.errors)
                 return Response(university_member_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            # Debug: Print serializer errors
+            
             print("User Serializer Errors:", user_serializer.errors)
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 class LoginView(APIView):
     def post(self, request):
-        # Retrieve credentials from request
+        
         ucid = request.data.get('ucid')
         password = request.data.get('password')
 
         print("Received UCID:", ucid)
         print("Received Password:", password)
 
-        # Authenticate user using custom backend
+        
         user = authenticate(request, ucid=ucid, password=password)
 
         if user is not None:
-            # Generate token for the authenticated user
+            
             token = RefreshToken.for_user(user)
             print("Token generated:", token)
             return Response({'token': str(token.access_token)})
