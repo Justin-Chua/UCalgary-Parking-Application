@@ -8,14 +8,14 @@ from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from .models import Todo, UniversityMember, Vehicle, Color  # Import Color model
+from .models import Todo, UniversityMember, Vehicle, Color, ParkingLot  # Import Color model
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
 from .authentication import UCIDAuthenticationBackend
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-from .serializers import TodoSerializer, UniversityMemberSerializer, UserSerializer, VehicleSerializer
+from .serializers import TodoSerializer, UniversityMemberSerializer, UserSerializer, VehicleSerializer, ParkingLotSerializer
 
 
 class ListTodo(generics.ListCreateAPIView):
@@ -192,3 +192,13 @@ class DeleteVehicleView(APIView):
             return Response("Vehicle not found", status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class DetailedlotView(APIView):
+    def get(self, request):
+        # lotNo = request.data.get('lot_no')
+        
+        # print("lotNo:", lotNo)
+         
+        park_lot = ParkingLot.objects.get(lot_no = request.data.get('lot_no'))
+        serializer = ParkingLotSerializer(park_lot)
+        return Response(serializer.data)
