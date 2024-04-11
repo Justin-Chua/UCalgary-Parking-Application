@@ -10,8 +10,7 @@ function Login() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
-        
+    
         if (ucid.length !== 8) {
             setErrors({ ucidError: 'UCID must be exactly 8 digits long' });
             return;
@@ -22,9 +21,13 @@ function Login() {
             if (response.status === 200) {
                 const token = response.data.token;
                 console.log('Token received:', token);
-                localStorage.setItem('token', token); 
-                
-                window.location.href = '/';
+                localStorage.setItem('token', token);
+    
+                if (response.data.redirect) {
+                    window.location.href = response.data.redirect;
+                } else {
+                    window.location.href = '/';
+                }
             }
         } catch (error) {
             if (error.response && error.response.status === 401) {
@@ -34,6 +37,7 @@ function Login() {
             }
         }
     };
+  
 
     return (
         <div>

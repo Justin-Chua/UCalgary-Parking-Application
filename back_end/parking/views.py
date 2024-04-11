@@ -8,14 +8,14 @@ from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from .models import Todo, UniversityMember, Vehicle, Color  # Import Color model
+from .models import Todo, UniversityMember, Vehicle, Color, Client  # Import Color model
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
 from .authentication import UCIDAuthenticationBackend
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-from .serializers import TodoSerializer, UniversityMemberSerializer, UserSerializer, VehicleSerializer
+from .serializers import ClientSerializer, TodoSerializer, UniversityMemberSerializer, UserSerializer, VehicleSerializer
 
 
 class ListTodo(generics.ListCreateAPIView):
@@ -52,41 +52,60 @@ class SignupView(APIView):
             }
             university_member_serializer = UniversityMemberSerializer(data=university_member_data)
             if university_member_serializer.is_valid():
-               
-                university_member_serializer.save()
-                return Response(university_member_serializer.data, status=status.HTTP_201_CREATED)
+                
+                university_member = university_member_serializer.save()
+                
+                # Create a Client instance for the newly created UniversityMember
+                client_data = {
+                    'client_ucid': university_member.ucid
+                }
+                client_serializer = ClientSerializer(data=client_data)
+                if client_serializer.is_valid():
+                    client_serializer.save()
+                    return Response(university_member_serializer.data, status=status.HTTP_201_CREATED)
+                else:
+                    # If there's an error creating the Client, delete the UniversityMember and User
+                    user.delete()
+                    university_member.delete()
+                    print("Client Serializer Errors:", client_serializer.errors)
+                    return Response(client_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
-               
+                # If there's an error with UniversityMember data, delete the User
                 user.delete()
-               
                 print("University Member Serializer Errors:", university_member_serializer.errors)
                 return Response(university_member_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            
             print("User Serializer Errors:", user_serializer.errors)
             return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 class LoginView(APIView):
     def post(self, request):
-        
         ucid = request.data.get('ucid')
         password = request.data.get('password')
 
-        print("Received UCID:", ucid)
-        print("Received Password:", password)
-
-        
         user = authenticate(request, ucid=ucid, password=password)
-
+        token = None  # Define token variable with initial value None
+        
         if user is not None:
-            
-            token = RefreshToken.for_user(user)
-            print("Token generated:", token)
+            university_member = UniversityMember.objects.get(user=user)
+            if hasattr(university_member, 'client'):  # Check if the university member has a client instance
+                token = RefreshToken.for_user(user)
+            elif hasattr(university_member, 'parkingadmin'):  # Check if the university member is a ParkingAdmin
+                token = RefreshToken.for_user(user)  # Refresh token here as well, assuming same behavior for ParkingAdmin
+                return Response({'token': str(token.access_token), 'redirect': 'usersearch/'})
+            else:
+                return Response({'error': 'Invalid user type'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        # Return response with token if defined
+        if token:
             return Response({'token': str(token.access_token)})
         else:
-            print("Authentication failed for UCID:", ucid)
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'Token not generated'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
 
 
@@ -192,3 +211,24 @@ class DeleteVehicleView(APIView):
             return Response("Vehicle not found", status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+        
+class UserSearchView(APIView):
+    def get(self, request):
+        license_plate = request.query_params.get('licensePlate')
+        if not license_plate:
+            return Response({'error': 'License plate parameter is missing'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Query the Vehicle model to get the vehicle with the provided license plate
+        vehicle = get_object_or_404(Vehicle, plate_no=license_plate)
+        
+        # Get the owner of the vehicle
+        user = vehicle.owner
+        
+        # Serialize the user data along with the plate number
+        serializer = UniversityMemberSerializer(user.universitymember)
+        serialized_data = serializer.data
+        serialized_data['plateNumber'] = license_plate  # Add the plate number to the serialized data
+        
+        return Response(serialized_data)
