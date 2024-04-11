@@ -149,7 +149,7 @@ class AddVehicleView(APIView):
                 color.vehicle_color = color_name
                 color.save()
             
-            # Return response
+            # Return response with color information
             vehicle_data = vehicle_serializer.data
             vehicle_data['color'] = color_name
             return Response(vehicle_data, status=status.HTTP_201_CREATED)
@@ -168,7 +168,19 @@ class ViewVehicleView(APIView):
     def get(self, request):
         vehicles = Vehicle.objects.filter(owner=request.user)
         serializer = VehicleSerializer(vehicles, many=True)
-        return Response(serializer.data)
+        # Include color information in the serialized data
+        serialized_data = []
+        for vehicle_data in serializer.data:
+            color = Color.objects.filter(plate_no=vehicle_data['plateNumber']).first()
+            if color:
+                vehicle_data['color'] = color.vehicle_color
+                print(f"Color fetched for plate number {vehicle_data['plateNumber']}: {color.vehicle_color}")
+            else:
+                vehicle_data['color'] = 'Color not specified'
+                print(f"No color found for plate number {vehicle_data['plateNumber']}")
+            serialized_data.append(vehicle_data)
+        return Response(serialized_data)
+
 
 class DeleteVehicleView(APIView):
     def delete(self, request):

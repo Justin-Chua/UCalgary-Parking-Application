@@ -146,13 +146,16 @@ function Profile() {
         <Modal.Body>
           {selectedVehicle && (
             <div>
+              {/* Add this console.log statement */}
+              {console.log('Selected Vehicle Data:', selectedVehicle)}
               <p>Make: {selectedVehicle.make}</p>
               <p>Model: {selectedVehicle.model}</p>
-              <p>Color: {selectedVehicle.color ? selectedVehicle.color.vehicle_color : ''}</p> {/* Display color */}
+              <p>Color: {selectedVehicle.color}</p> {/* Display color */}
               <p>License Plate: {selectedVehicle.plateNumber}</p> {/* Display plate number */}
             </div>
           )}
         </Modal.Body>
+
         <Modal.Footer>
           <Button variant="danger" onClick={() => handleDeleteVehicle(selectedVehicle.plateNumber)}>Delete</Button>
           <Button variant="secondary" onClick={handleCloseViewVehicleModal}>Close</Button>
