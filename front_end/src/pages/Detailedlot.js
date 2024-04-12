@@ -2,13 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Button, Container, Row, Col } from 'react-bootstrap'; 
 import Modal from 'react-bootstrap/Modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useLocation } from 'react-router-dom';
 
 function DetailedLot() {
     // Dummy data for demonstration
     const [parkingStalls, setParkingStalls] = useState([]);
-    const totalStalls = 112; // Total number of stalls
+    //const totalStalls = 112; // Total number of stalls
     const [modalShow, setModalShow] = useState(false);
     const [selectedStallId, setSelectedStallId] = useState(null);
+
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const lot_no = params.get("lot_no");
+    const totalStalls = params.get('capacity');
 
     useEffect(() => {
         // Generate dummy data for demonstration
@@ -87,6 +93,7 @@ function DetailedLot() {
                 show={modalShow} 
                 onHide={() => setModalShow(false)} 
                 selectedStallId={selectedStallId} 
+                lot_no={lot_no}
             />
         </div>
     );
@@ -254,21 +261,16 @@ function ReserveModal(props) {
                         if(FromMonth == ToMonth){
                             if(FromDay == ToDay){
                                 timePeriod = ((ToMin - FromMin) + ((ToHour - FromHour) * 60));
-                                if(timePeriod < 0){
-                                    settoDateErrorMessage('Time Period is invalid');
+                                console.log(timePeriod);
+                                if(timePeriod >= 15){
+                                    validation = true;
+                                    
+                                }
+                                else if (timePeriod >= 0){
+                                    settoDateErrorMessage('Please choose longer period');
                                 }
                                 else{
-                                    if(FromHour == ToHour){
-                                        if(FromMin > ToMin){
-                                            settoDateErrorMessage('Time Period is invalid');
-                                        }
-                                        else if((ToMin - FromMin) < 15){
-                                            settoDateErrorMessage('Please choose longer period');
-                                        }
-                                        else{
-                                            timePeriod = (ToMin - FromMin);
-                                        }
-                                    }
+                                    settoDateErrorMessage('Time Period is invalid');
                                 }
                                 
                             }
@@ -295,7 +297,7 @@ function ReserveModal(props) {
                     <h4>
                         <div>{props.data}</div>
                     </h4>
-                    <h4>Selected Stall: {props.selectedStallId}</h4>
+                    <h4>Selected Stall: Lot {props.lot_no} - {props.selectedStallId}</h4>
                     <p>
                         Please enter your information for reservation.
                     </p>
