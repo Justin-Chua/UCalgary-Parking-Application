@@ -195,10 +195,17 @@ class DeleteVehicleView(APIView):
         
 class DetailedlotView(APIView):
     def get(self, request):
-        # lotNo = request.data.get('lot_no')
-        
-        # print("lotNo:", lotNo)
          
-        park_lot = ParkingLot.objects.get(lot_no = request.data.get('lot_no'))
+        park_lot = request.query_params.get('lot_no')
+        
         serializer = ParkingLotSerializer(park_lot)
+        return Response(serializer.data)
+    
+class MapView(APIView):
+    def get(self, request):
+        lot_no = request.query_params.get('lot_no')
+        park_lot = ParkingLot.objects.filter(lot_no=lot_no)
+        if not park_lot.exists():
+            return Response({'error': 'No parking lot found with the provided lot number'}, status=404)
+        serializer = ParkingLotSerializer(park_lot, many=True)
         return Response(serializer.data)

@@ -19,8 +19,9 @@ class TodoSerializer(serializers.ModelSerializer):
 class ParkingLotSerializer(serializers.ModelSerializer):
     class Meta:
         model = ParkingLot
-        fields = ['lot_no', 'latitude', 'longitude', 'capacity', 'occupied']
-        
+        fields = ['lot_no', 'latitude', 'longitude', 'capacity', 'occupied_spaces']
+
+
         
 class UniversityMemberSerializer(serializers.ModelSerializer):
     class Meta:

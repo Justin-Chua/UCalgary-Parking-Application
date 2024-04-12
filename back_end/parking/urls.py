@@ -13,5 +13,6 @@ urlpatterns = [
     path('view-vehicles/', views.ViewVehicleView.as_view(), name='view_vehicles'),
     path('delete-vehicle/', views.DeleteVehicleView.as_view(), name='delete_vehicle'),
     path('detailedlot/', views.DetailedlotView.as_view(), name='detailedlot'),
+    path('map/', views.MapView.as_view(), name='map'),
     
 ]
