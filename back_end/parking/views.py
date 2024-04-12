@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from .models import Todo, UniversityMember, Vehicle, Color, Client  # Import Color model
+from .models import ParkingAdmin, Todo, UniversityMember, Vehicle, Color, Client  # Import Color model
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
@@ -232,3 +232,15 @@ class UserSearchView(APIView):
         serialized_data['plateNumber'] = license_plate  # Add the plate number to the serialized data
         
         return Response(serialized_data)
+    
+    
+class CheckAdminStatus(APIView):
+    def get(self, request):
+        user = request.user
+        try:
+            admin = ParkingAdmin.objects.get(admin_ucid=user.universitymember)
+            print("hi")
+            return Response({'isAdmin': True})
+        except ParkingAdmin.DoesNotExist:
+            print("not hi")
+            return Response({'isAdmin': False})
