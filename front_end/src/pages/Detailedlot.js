@@ -29,6 +29,11 @@ function DetailedLot() {
         generateParkingStalls();
     }, []);
 
+    const resetModal = () => {
+        setModalShow(false);
+        // Reset other states if there are any
+    };
+
     const renderParkingStalls = () => {
         // For multiple groups
         const stallsPerGroup = 14;
@@ -91,7 +96,8 @@ function DetailedLot() {
             </Container>
             <ReserveModal 
                 show={modalShow} 
-                onHide={() => setModalShow(false)} 
+                onHide={resetModal} 
+                // onHide={() => setModalShow(false)} 
                 selectedStallId={selectedStallId} 
                 lot_no={lot_no}
             />
@@ -115,6 +121,27 @@ function ReserveModal(props) {
         const [fromDateError, setfromDateErrorMessage] = React.useState("");
         const [toDateError, settoDateErrorMessage] = React.useState("");
         const [timeRange, settimeRange] = React.useState("");
+
+        const resetForm = () => {
+            setName("");
+            setUcid("");
+            setPlate("");
+            setFromDate("");
+            setToDate("");
+            setnameErrorMessage("");
+            setucidErrorMessage("");
+            setplateErrorMessage("");
+            setfromDateErrorMessage("");
+            settoDateErrorMessage("");
+            // Reset any error messages or other related states
+        };
+    
+        // Call this function on modal close
+        useEffect(() => {
+            if (!props.show) {
+                resetForm();
+            }
+        }, [props.show]);
     
         let validation = false;
         
