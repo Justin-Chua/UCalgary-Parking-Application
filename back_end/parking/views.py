@@ -11,7 +11,8 @@ from rest_framework.permissions import IsAuthenticated
 from .models import (
     ParkingAdmin, Todo, UniversityMember, 
     Vehicle, Color, Client,
-    ParkingLot, Ticket)  # Import Color model
+    ParkingLot, Ticket, ParkingPermit,
+    Reservation)  # Import Color model
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
@@ -20,7 +21,8 @@ from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from .serializers import (
     ClientSerializer, TodoSerializer, UniversityMemberSerializer, 
-    UserSerializer, VehicleSerializer, ParkingLotSerializer, TicketSerializer)
+    UserSerializer, VehicleSerializer, ParkingLotSerializer, 
+    TicketSerializer, ParkingPermitSerializer, ReservationSerializer)
 
 
 class ListTodo(generics.ListCreateAPIView):
@@ -48,6 +50,24 @@ class TicketView(APIView):
         serializer = TicketSerializer(user_tickets, many=True)
         return Response(serializer.data)
 
+class ParkingPermitView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        client = Client.objects.get(client_ucid__user=request.user)
+        user_permits = ParkingPermit.objects.filter(client_ucid=client)
+        serializer = ParkingPermitSerializer(user_permits, many=True)
+        return Response(serializer.data)
+    
+class ReservationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        client = Client.objects.get(client_ucid__user=request.user)
+        user_reservations = Reservation.objects.filter(client_ucid=client)
+        serializer = ReservationSerializer(user_reservations, many=True)
+        return Response(serializer.data)       
+    
 class SignupView(APIView):
     def post(self, request, format=None):
         user_data = {

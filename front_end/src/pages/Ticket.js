@@ -33,7 +33,6 @@ function Ticket() {
     }, []);
 
     return (
-        // Add backend for this later - currently hardcoded
         <>  
             <h1 id="page-header">Parking Tickets</h1>
             {userTickets.map(ticket => (
