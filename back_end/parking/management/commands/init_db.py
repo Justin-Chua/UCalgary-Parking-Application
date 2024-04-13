@@ -1,5 +1,6 @@
-# In yourapp/management/commands/create_member.py
 from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User
+from django.db import IntegrityError
 from parking.models import (
     ParkingLot, ParkingSpace, Vehicle, 
     Color, UniversityMember, Client, 
@@ -13,6 +14,7 @@ class Command(BaseCommand):
     help = 'Populate the database with dummy data, which we can use to work with.'
 
     def handle(self, *args, **options):
+        self.seed_users()
         self.seed_parking_lots()
         self.seed_parking_spaces()
         self.seed_vehicles()
@@ -26,6 +28,27 @@ class Command(BaseCommand):
         self.seed_tickets()
         self.seed_parking_permits()
         self.seed_reservations()
+
+    def seed_users(self):
+        users = []
+        user_30098941 = User(username='30098941', email='justin.chua@ucalgary.ca')
+        user_30098941.set_password('justinisthebest')
+        users.append(user_30098941)
+        user_12312312 = User(username='12312312', email='bob.dylan@ucalgary.ca')
+        user_12312312.set_password('gobob123')
+        users.append(user_12312312)
+        user_65465465 = User(username='65465465', email='greg.oden@ucalgary.ca')
+        user_65465465.set_password('nbagreg')
+        users.append(user_65465465)
+        user_99999999 = User(username='99999999', email='thedingleberry@ucalgary.ca')
+        user_99999999.set_password('berrydingle')
+        users.append(user_99999999)
+        for user in users:
+            try:
+                user.save()
+                self.stdout.write(self.style.SUCCESS(f'User with name {user.username} created successfully.'))
+            except IntegrityError:
+                self.stdout.write(self.style.WARNING(f'User with name {user.username} already exists.'))
 
     def seed_parking_lots(self):
         parking_lots = []
@@ -180,23 +203,29 @@ class Command(BaseCommand):
 
     def seed_vehicles(self):
         vehicles = []
+        owner_30098941 = User.objects.get(username='30098941')
         vehicles.append(Vehicle(
             plate_no='CGG4891',
             make='Nissan',
             model='Skyline',
-            lot_no=None
+            lot_no=None,
+            owner=owner_30098941
         ))
+        owner_12312312 = User.objects.get(username='12312312')
         vehicles.append(Vehicle(
             plate_no='SINGER',
             make='Toyota',
             model='Corolla',
-            lot_no=None
+            lot_no=None,
+            owner=owner_12312312
         ))
+        owner_65465465 = User.objects.get(username='65465465')
         vehicles.append(Vehicle(
             plate_no='DANCER',
             make='Subaru',
             model='Impreza',
-            lot_no=None
+            lot_no=None,
+            owner=owner_65465465
         ))
 
         for vehicle in vehicles:
@@ -234,7 +263,9 @@ class Command(BaseCommand):
 
     def seed_university_members(self): 
         university_members = []
+        user_30098941 = User.objects.get(username='30098941')
         university_members.append(UniversityMember(
+            user=user_30098941,
             ucid=30098941,
             name='Justin Chua',
             email='justin.chua@ucalgary.ca',
@@ -242,7 +273,9 @@ class Command(BaseCommand):
             address='123 Skyward Ave',
             phone_no=4037998999
         ))
+        user_12312312 = User.objects.get(username='12312312')
         university_members.append(UniversityMember(
+            user=user_12312312,
             ucid=12312312,
             name='Bob Dylan',
             email='bob.dylan@ucalgary.ca',
@@ -250,7 +283,9 @@ class Command(BaseCommand):
             address='43 Irvine Blvd',
             phone_no=5876819942
         ))
+        user_65465465 = User.objects.get(username='65465465')
         university_members.append(UniversityMember(
+            user=user_65465465,
             ucid=65465465,
             name='Greg Oden',
             email='greg.oden@ucalgary.ca',
@@ -258,7 +293,9 @@ class Command(BaseCommand):
             address='449 Hollywood Blvd',
             phone_no=8196430001
         ))
+        user_99999999 = User.objects.get(username='99999999')
         university_members.append(UniversityMember(
+            user=user_99999999,
             ucid=99999999,
             name='Perry Dingleberry',
             email='thedingleberry@ucalgary.ca',
