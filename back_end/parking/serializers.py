@@ -64,4 +64,4 @@ class VehicleSerializer(serializers.ModelSerializer):
 class VehiclesDataSerializer(serializers.ModelSerializer):
         class Meta:
             model = Vehicle
-            fields = ['plate_no', 'make', 'model', 'lot_no_id', 'owner_id']
+            fields = ['plate_no', 'make', 'model', 'lot_no_id', 'owner']

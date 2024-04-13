@@ -129,13 +129,13 @@ function Payment() {
 
             try {
                 // Assuming the plate_no should be part of the endpoint query and lot_no in the body
-                const response = await axios.post(`http://127.0.0.1:8000/api/vehicles-data/`, {lot_no});
-            
+                const response = await axios.post(`http://127.0.0.1:8000/api/vehicles-data/?plate_no=${plate_no}`, {lot_no});
+                console.log(lot_no);
                 if (response.status === 200) {
                     setSuccessMessage('Lot number successfully updated.');
                     setTimeout(() => {
                         setSuccessMessage('');
-                        window.location.href = '/';  // Consider using react-router for navigation instead of reloading
+                        //window.location.href = '/';  // Consider using react-router for navigation instead of reloading
                     }, 3000);
                 } else {
                     // This else block may never be hit because Axios throws for status codes outside the 2xx range

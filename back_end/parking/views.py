@@ -219,8 +219,18 @@ class VehiclesDataView(APIView):
             plate_no = request.query_params.get('plate_no')
             vehicle_data = Vehicle.objects.get(plate_no=plate_no)
             
-            lot_no = request.query_params.get('lot_no')
-            vehicle_data.update_vehicle(lot_no=lot_no)
+            lot_no_str = request.data.get('lot_no')  # Access lot_no from request data
+            
+            # Fetch ParkingLot instance corresponding to the lot_no string
+            parking_lot = ParkingLot.objects.get(lot_no=lot_no_str)
+            
+            # Assign ParkingLot instance to the Vehicle's lot_no field
+            vehicle_data.lot_no = parking_lot
+            vehicle_data.save()  # Save the changes
+            
         except Vehicle.DoesNotExist:
             return Response({'error': 'No vehicle found with the provided plate number'}, status=404)
+        except ParkingLot.DoesNotExist:
+            return Response({'error': 'No parking lot found with the provided lot number'}, status=404)
+        
         return Response({'message': 'Lot number added successfully'})
