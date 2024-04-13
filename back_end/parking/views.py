@@ -176,7 +176,7 @@ class AddVehicleView(APIView):
             return Response(vehicle_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def is_valid_color(color_name):
-    acceptable_colors = {'black', 'white', 'red', 'blue', 'green', 'yellow', 'orange'}
+    acceptable_colors = {'black', 'white', 'red', 'blue', 'green', 'yellow', 'orange', 'gray'}
     return color_name in acceptable_colors
 
 
