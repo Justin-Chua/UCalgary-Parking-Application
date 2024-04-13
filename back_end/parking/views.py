@@ -8,14 +8,14 @@ from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from .models import Todo, UniversityMember, Vehicle, Color, ParkingLot  # Import Color model
+from .models import Todo, UniversityMember, Vehicle, Color, ParkingLot # Import Color model
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
 from .authentication import UCIDAuthenticationBackend
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-from .serializers import TodoSerializer, UniversityMemberSerializer, UserSerializer, VehicleSerializer, ParkingLotSerializer
+from .serializers import TodoSerializer, UniversityMemberSerializer, UserSerializer, VehicleSerializer, ParkingLotSerializer, VehiclesDataSerializer
 
 
 class ListTodo(generics.ListCreateAPIView):
@@ -193,13 +193,6 @@ class DeleteVehicleView(APIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-class DetailedlotView(APIView):
-    def get(self, request):
-         
-        park_lot = request.query_params.get('lot_no')
-        
-        serializer = ParkingLotSerializer(park_lot)
-        return Response(serializer.data)
     
 class MapView(APIView):
     def get(self, request):
@@ -209,3 +202,25 @@ class MapView(APIView):
             return Response({'error': 'No parking lot found with the provided lot number'}, status=404)
         serializer = ParkingLotSerializer(park_lot, many=True)
         return Response(serializer.data)
+    
+class VehiclesDataView(APIView):
+    
+    def get(self, request):
+        plate_no = request.query_params.get('plate_no')
+        platenumber = Vehicle.objects.filter(plate_no=plate_no)
+        if not platenumber.exists():
+            return Response({'error': 'No vehicle found with the provided plate number'}, status=404)
+        serializer = VehiclesDataSerializer(platenumber, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        
+        try:
+            plate_no = request.query_params.get('plate_no')
+            vehicle_data = Vehicle.objects.get(plate_no=plate_no)
+            
+            lot_no = request.query_params.get('lot_no')
+            vehicle_data.update_vehicle(lot_no=lot_no)
+        except Vehicle.DoesNotExist:
+            return Response({'error': 'No vehicle found with the provided plate number'}, status=404)
+        return Response({'message': 'Lot number added successfully'})

@@ -107,6 +107,10 @@ function DetailedLot() {
 
 function ReserveModal(props) {
 
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const lot_no = params.get("lot_no");
+
         const [name, setName] = React.useState("");
         const [ucid, setUcid] = React.useState("");
         const [plate, setPlate] = React.useState("");
@@ -120,7 +124,7 @@ function ReserveModal(props) {
         const [plateError, setplateErrorMessage] = React.useState("");
         const [fromDateError, setfromDateErrorMessage] = React.useState("");
         const [toDateError, settoDateErrorMessage] = React.useState("");
-        const [timeRange, settimeRange] = React.useState("");
+        const [rate, setRate] = React.useState("");
 
         const resetForm = () => {
             setName("");
@@ -211,12 +215,14 @@ function ReserveModal(props) {
     
             if((timePeriod/60) >= 5){
                 rateInfo = 'Daily Rate: $22';
+                // setRate(22);
             }
             else if ((timePeriod/60) < 0){
                 rateInfo = 'Hourly Rate: Invalid';
             }
             else{
                 rateInfo = 'Hourly Rate: ' + Math.ceil(timePeriod/60) + 'x CAD $5 = CAD $' + 5 * Math.ceil((timePeriod/60));
+                // setRate((5 * Math.ceil((timePeriod/60))));
             }
             
         }
@@ -224,6 +230,7 @@ function ReserveModal(props) {
     
         const handleClick = () => {
     
+            
             
             if(name.length == 0){
                 setnameErrorMessage('Name is required');
@@ -311,7 +318,7 @@ function ReserveModal(props) {
     
             if(validation == true){
     
-                window.location.href = '/payment';
+                window.location.href = `/payment/?lot_no=${lot_no}&plate_no=${plate}`;
             }
         }
     

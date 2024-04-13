@@ -32,6 +32,11 @@ class Vehicle(models.Model):
         ParkingLot, to_field='lot_no', on_delete=models.SET_NULL, null=True
     )
     owner = models.ForeignKey(User, related_name='vehicles', on_delete=models.CASCADE, default=None)
+    
+    def update_vehicle(self, lot_no=None):
+        if lot_no:
+            self.lot_no = lot_no
+        self.save()
 
 
 class Color(models.Model):

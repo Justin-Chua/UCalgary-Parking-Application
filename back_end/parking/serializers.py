@@ -61,5 +61,7 @@ class VehicleSerializer(serializers.ModelSerializer):
         # Create and return the vehicle instance
         return super().create(validated_data)
 
-
-        
+class VehiclesDataSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Vehicle
+            fields = ['plate_no', 'make', 'model', 'lot_no_id', 'owner_id']
