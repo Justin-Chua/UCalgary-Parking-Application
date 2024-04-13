@@ -36,7 +36,7 @@ function DetailedLot() {
 
     const renderParkingStalls = () => {
         // For multiple groups
-        const stallsPerGroup = 14;
+        const stallsPerGroup = 20;
         const totalGroups = Math.ceil(parkingStalls.length / stallsPerGroup);
 
         const groups = [];
@@ -55,14 +55,14 @@ function DetailedLot() {
                         key={stall.id} 
                         variant={stall.available ? 'success' : 'danger'} 
                         disabled={!stall.available}
-                        style={{ width: '90px', height: '100px', margin: '1px', borderRight: '2px solid yellow' }}
+                        style={{ width: '90px', height: '50px', margin: '1px'}}
                         onClick={() => {setModalShow(true); setSelectedStallId(stall.id)}}
                     >
                         {stall.id}
                     </Button>
                 ));
                 groupRows.push(
-                    <Row key={rowIndex} className="mb-0" style={{ borderBottom: '1px solid yellow', height: 'auto', width: '200px' }}>
+                    <Row key={rowIndex} className="mb-0" style={{ borderBottom: '1px solid yellow', height: 'auto', width: '185px' }}>
                         {rowButtons}
                     </Row>
                 );
@@ -73,7 +73,7 @@ function DetailedLot() {
 
             // Calculate margin dynamically for centering based on the number of groups
             const totalMargin = 8 - totalGroups;
-            marginLeft = marginRight = totalMargin * 20; // Adjust as needed
+            marginLeft = marginRight = totalMargin * 10; // Adjust as needed
 
             groups.push(
                 <Col key={groupIndex} style={{ marginLeft: `${marginLeft}px`, marginRight: `${marginRight}px`, marginBottom: '20px' }}>
