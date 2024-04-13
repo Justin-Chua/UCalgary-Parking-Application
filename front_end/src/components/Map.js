@@ -1,6 +1,5 @@
 import React from 'react';
 import marker from '../assets/map-marker-blue.png';
-import * as Icons from 'react-bootstrap-icons';
 import * as Bootstrap from 'react-bootstrap';
 // Interactive map
 import L from 'leaflet';

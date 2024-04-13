@@ -95,7 +95,7 @@ function ReserveModal(props) {
         let ToMin = "";
 
         let timePeriod = 0;
-        if(name.length == 0){
+        if(name.length === 0){
             setnameErrorMessage('Name is required');
             validation = false;
         }
@@ -103,11 +103,11 @@ function ReserveModal(props) {
             setnameErrorMessage('');
         }
 
-        if(ucid.length == 0){
+        if(ucid.length === 0){
             setucidErrorMessage('UCID is required');
             validation = false;
         }
-        else if(ucid.length != 8){
+        else if(ucid.length !== 8){
             setucidErrorMessage('Invalid UCID');
             validation = false;
         }
@@ -116,7 +116,7 @@ function ReserveModal(props) {
             setucidErrorMessage('');
         }
 
-        if(plate.length == 0){
+        if(plate.length === 0){
             setplateErrorMessage('License plate is required');
             validation = false;
         }
@@ -124,13 +124,13 @@ function ReserveModal(props) {
             setplateErrorMessage('');
         }
 
-        if(fromDate.length == 0){
+        if(fromDate.length === 0){
             setfromDateErrorMessage('Date is required');
         }
         else{
             setfromDateErrorMessage('');
         }
-        if(toDate.length == 0){
+        if(toDate.length === 0){
             settoDateErrorMessage('Date is required');
         }
         else{
@@ -139,7 +139,7 @@ function ReserveModal(props) {
 
 
 
-        if(fromDate.length != 0 && toDate.length != 0){
+        if(fromDate.length !== 0 && toDate.length !== 0){
 
             settoDateErrorMessage('');
             setfromDateErrorMessage('');
@@ -187,11 +187,11 @@ function ReserveModal(props) {
             else if(FromMin > ToMin){
                 settoDateErrorMessage('Time Period is invalid');
             }
-            else if(FromYear == ToYear){
-                if(FromMonth == ToMonth){
-                    if(FromDay == ToDay){
+            else if(FromYear === ToYear){
+                if(FromMonth === ToMonth){
+                    if(FromDay === ToDay){
                         timePeriod = ((ToMin - FromMin) + ((ToHour - FromHour) * 60));
-                        if(FromHour == ToHour){
+                        if(FromHour === ToHour){
                             if((ToMin - FromMin) < 15){
                                 settoDateErrorMessage('Please choose longer period');
                             }
@@ -215,7 +215,7 @@ function ReserveModal(props) {
         }
 
 
-        if(validation == true){
+        if(validation === true){
 
             window.location.href = '/payment';
         }
