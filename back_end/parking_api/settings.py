@@ -62,6 +62,7 @@ SIMPLE_JWT = {
 
 AUTHENTICATION_BACKENDS = [
     'parking.authentication.UCIDAuthenticationBackend',
+    'parking.custom_auth_backends.UserTypeAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 

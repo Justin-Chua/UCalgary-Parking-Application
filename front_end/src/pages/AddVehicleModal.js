@@ -49,6 +49,7 @@ function AddVehicleModal({ show, handleClose, addVehicle }) {
               <option value="green">Green</option>
               <option value="yellow">Yellow</option>
               <option value="orange">Orange</option>
+              <option value="gray">Gray</option>
             </Form.Control>
           </Form.Group>
           <Form.Group controlId="plateNumber">

@@ -11,6 +11,8 @@ import Signup from './pages/Signup';
 import Editprofile from './pages/Editprofile';
 import DetailedLot from './pages/Detailedlot';
 import Payment from './pages/Payment';
+import UserSearch from './pages/UserSearch';
+import UserFound from './pages/UserFound';
 // Card styles
 import './styles/card.css';
 function App() {
@@ -30,6 +32,8 @@ function App() {
           <Route path = "/editprofile" element = { <Editprofile /> } />
           <Route path = "/detailedlot" element = { <DetailedLot /> } />
           <Route path = "/payment" element = { <Payment /> } />
+          <Route path = "/usersearch" element = { <UserSearch /> } />
+          <Route path = "/userfound" element = { <UserFound /> } />
         </Routes>
       </Router>
     </>

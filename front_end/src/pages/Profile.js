@@ -10,6 +10,7 @@ function Profile() {
   const [vehicles, setVehicles] = useState([]);
   const [viewVehicleModal, setViewVehicleModal] = useState(false); // State variable for view vehicle modal
   const [selectedVehicle, setSelectedVehicle] = useState(null); // State variable to store the selected vehicle
+  const [isAdmin, setIsAdmin] = useState(false); // State variable to determine if user is admin
 
   useEffect(() => {
     const fetchProfileInfo = async () => {
@@ -36,6 +37,15 @@ function Profile() {
 
         setProfileData(profileResponse.data);
         setVehicles(vehicleResponse.data); // Update vehicles state with retrieved vehicle information
+
+        // Check if the user is an admin
+        const adminResponse = await axios.get('http://127.0.0.1:8000/api/check-admin-status/', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        setIsAdmin(adminResponse.data.isAdmin);
       } catch (error) {
         console.error('Error fetching user information:', error);
         setError('Error fetching user information. Please try again later.');
@@ -131,7 +141,7 @@ function Profile() {
             {vehicles.length > 0 ? (
               <Button variant="primary" onClick={() => handleViewVehicle(vehicles[0])}>View Vehicle</Button>
             ) : (
-              <Button variant="primary" onClick={handleShowModal}>Add Vehicle</Button>
+              !isAdmin && <Button variant="primary" onClick={handleShowModal}>Add Vehicle</Button>
             )}
             <AddVehicleModal show={showModal} handleClose={handleCloseModal} addVehicle={addVehicle} /> {/* Modal component */}
             <Button variant="danger" onClick={handleEditProfile}>Edit Profile</Button>
