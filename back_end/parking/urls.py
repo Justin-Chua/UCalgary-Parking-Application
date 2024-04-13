@@ -14,6 +14,8 @@ urlpatterns = [
     path('delete-vehicle/', views.DeleteVehicleView.as_view(), name='delete_vehicle'),
     path('usersearch/', views.UserSearchView.as_view(), name='user_search'),
     path('check-admin-status/', views.CheckAdminStatus.as_view()),
+    path('tickets/create/', views.TicketCreateView.as_view(), name='ticket-create'),
+    
 
     
 ]

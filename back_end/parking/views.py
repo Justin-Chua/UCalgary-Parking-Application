@@ -8,14 +8,14 @@ from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from .models import ParkingAdmin, Todo, UniversityMember, Vehicle, Color, Client  # Import Color model
+from .models import ParkingAdmin, Todo, UniversityMember, Vehicle, Color, Client, Ticket 
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
 from .authentication import UCIDAuthenticationBackend
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-from .serializers import ClientSerializer, TodoSerializer, UniversityMemberSerializer, UserSerializer, VehicleSerializer
+from .serializers import ClientSerializer, TicketSerializer, TodoSerializer, UniversityMemberSerializer, UserSerializer, VehicleSerializer
 
 
 class ListTodo(generics.ListCreateAPIView):
@@ -244,3 +244,18 @@ class CheckAdminStatus(APIView):
         except ParkingAdmin.DoesNotExist:
             print("not hi")
             return Response({'isAdmin': False})
+        
+        
+class TicketCreateView(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure user is authenticated
+
+    def post(self, request):
+        serializer = TicketSerializer(data=request.data)
+        if serializer.is_valid():
+            # Assign the admin_ucid to the logged-in user
+            request.data['admin_ucid'] = request.user.universitymember
+            serializer = TicketSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

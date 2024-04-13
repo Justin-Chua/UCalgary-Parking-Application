@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Container, Row, Col, Button, Modal, Form } from 'react-bootstrap';
-import { SlashCircle, Calendar, Ticket } from 'react-bootstrap-icons'; // Importing Bootstrap icons
+import axios from 'axios'; // Import Axios for making HTTP requests
+import { SlashCircle, Ticket } from 'react-bootstrap-icons'; // Importing Bootstrap icons
 
 const UserFound = () => {
   const location = useLocation();
@@ -12,7 +13,7 @@ const UserFound = () => {
   const fullName = params.get('fullName');
   const ucid = params.get('ucid');
   const email = params.get('email');
-  const licensePlate = params.get('licensePlate'); // Ensure to use 'licensePlate'
+  const licensePlate = params.get('licensePlate');
 
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -20,6 +21,7 @@ const UserFound = () => {
   const [amountDue, setAmountDue] = useState('');
   const [offenceError, setOffenceError] = useState('');
   const [amountDueError, setAmountDueError] = useState('');
+  const [validationErrors, setValidationErrors] = useState(null);
 
   // Get current date and due date
   const currentDate = new Date().toLocaleDateString();
@@ -38,29 +40,59 @@ const UserFound = () => {
   };
 
   // Handle form submit
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
     // Validate offence
     if (offence.length === 0) {
       setOffenceError('Offence must be provided');
       return;
     }
-
+  
     // Validate amount due
     const amount = parseInt(amountDue);
     if (isNaN(amount) || amount <= 0) {
       setAmountDueError('Amount due must be a positive integer');
       return;
     }
+  
+    // Format dates
+    const currentDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 14);
+    const formattedDueDate = dueDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+  
+    // Get token from localStorage
+    const token = localStorage.getItem('token');
+    
+    // Set headers with token
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
 
-    // Process form submission (e.g., send data to server)
-    // Reset form fields
-    setOffence('');
-    setAmountDue('');
-    setOffenceError('');
-    setAmountDueError('');
-    setShowModal(false);
+    // Send ticket data to backend
+    try {
+      const response = await axios.post('http://localhost:8000/api/tickets/create/', {
+        client_ucid: ucid,
+        issue_date: currentDate,
+        due_date: formattedDueDate,
+        offense: offence,
+        amount_due: amount
+      }, config);
+  
+      console.log(response.data); // Log response from backend
+  
+      // Reset form fields and errors
+      setOffence('');
+      setAmountDue('');
+      setOffenceError('');
+      setAmountDueError('');
+      setShowModal(false);
+    } catch (error) {
+      console.error('Error creating ticket:', error);
+    }
   };
 
   return (
@@ -123,6 +155,13 @@ const UserFound = () => {
             <Button variant="primary" type="submit">
               Submit
             </Button>
+            {validationErrors && (
+              <div className="mt-2 text-danger">
+                {Object.values(validationErrors).map((error, index) => (
+                  <p key={index}>{error}</p>
+                ))}
+              </div>
+            )}
           </Form>
         </Modal.Body>
       </Modal>
