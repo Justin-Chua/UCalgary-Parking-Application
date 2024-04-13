@@ -33,21 +33,26 @@ function Signup() {
         }
 
         if (valid) {
-            // Prepare the data
+            
             const userData = {
-                ucid, name, email, password, address, phone_no: phoneNo
+                ucid,
+                name,
+                email,
+                password,
+                address,
+                phone_no: phoneNo 
             };
             
-            // Send data to your backend
-            axios.post('http://127.0.0.1:8000/api/signup/', userData) // Adjust the URL based on your configuration
+            
+            axios.post('http://127.0.0.1:8000/api/signup/', userData) 
                 .then(response => {
                     console.log('User registered:', response.data);
-                    // Redirect or show a success message
-                    window.location.href = '/'; // Or handle redirection based on your needs
+                    
+                    window.location.href = '/'; 
                 })
                 .catch(error => {
-                    console.error('There was an error!', error);
-                    // Optionally, handle errors, e.g., show an error message
+                    console.error('Error creating User:', error);
+                    
                 });
         }
     };

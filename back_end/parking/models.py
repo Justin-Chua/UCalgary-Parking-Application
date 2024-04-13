@@ -1,5 +1,8 @@
 from django.db import models
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator, RegexValidator
+from django.core.exceptions import ValidationError
 
 class ParkingLot(models.Model):
     lot_no = models.PositiveSmallIntegerField(
@@ -37,6 +40,8 @@ class Vehicle(models.Model):
     lot_no = models.OneToOneField(
         ParkingLot, to_field='lot_no', on_delete=models.SET_NULL, null=True
     )
+    owner = models.ForeignKey(User, related_name='vehicles', on_delete=models.CASCADE, default=None)
+
 
 class Color(models.Model):
     plate_no = models.OneToOneField(
@@ -45,6 +50,7 @@ class Color(models.Model):
     vehicle_color = models.CharField(max_length=50)
     
 class UniversityMember(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default=None)
     ucid = models.CharField(
         primary_key=True,
         validators=[
@@ -67,6 +73,19 @@ class UniversityMember(models.Model):
         ],
         max_length=10
     )
+    
+    def clean(self):
+        if self.phone_no and len(self.phone_no) != 10:
+            raise ValidationError('Phone number must be exactly 10 digits long.')
+
+    def update_profile(self, address=None, phone_no=None, password=None):
+        if address:
+            self.address = address
+        if phone_no:
+            self.phone_no = phone_no
+        if password:
+            self.password = make_password(password)
+        self.save()
 
 class Client(models.Model):
     client_ucid = models.OneToOneField(
