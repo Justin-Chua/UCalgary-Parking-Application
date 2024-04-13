@@ -263,8 +263,6 @@ function ReserveModal(props) {
                                 </svg>
                             </span>
                             <input type='datetime-local' class="form-control" placeholder='01/01 00:00' onChange={(e) => setFromDate(e.target.value)} required/>
-                            
-                            
                         </div>
                         {fromDateError && <div className="error text-danger"> {fromDateError} </div>}
                     </div>
