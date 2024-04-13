@@ -12,10 +12,6 @@ function Home() {
         <>
             <h3 id="page-header">View UCalgary Parking</h3>
             <Map />
-            <div>
-                <Button variant="danger" onClick={() => setModalShow(true)}>Test</Button>
-                <ReserveModal show={modalShow} onHide={() => setModalShow(false)}/>
-            </div>  
         </>
     );
 }
