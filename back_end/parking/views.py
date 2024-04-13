@@ -10,7 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
  # Import Color model
 
-from .models import ParkingAdmin, Todo, UniversityMember, Vehicle, Color, Client, Ticket 
+from .models import ParkingAdmin, ParkingLot, Todo, UniversityMember, Vehicle, Color, Client, Ticket 
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User

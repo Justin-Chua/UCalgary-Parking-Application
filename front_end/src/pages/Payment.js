@@ -77,7 +77,6 @@ function Payment() {
         }
         else{
             setnumberErrorMessage('');
-
         }
 
 
@@ -135,7 +134,8 @@ function Payment() {
                     setSuccessMessage('Lot number successfully updated.');
                     setTimeout(() => {
                         setSuccessMessage('');
-                        //window.location.href = '/';  // Consider using react-router for navigation instead of reloading
+                        // Redirect to 'reservation/' upon successful payment
+                        window.location.href = '/reservation/';
                     }, 3000);
                 } else {
                     // This else block may never be hit because Axios throws for status codes outside the 2xx range
