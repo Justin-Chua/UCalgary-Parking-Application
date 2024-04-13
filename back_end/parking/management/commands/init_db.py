@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 from django.db import IntegrityError
 from parking.models import (
     ParkingLot, ParkingSpace, Vehicle, 
@@ -266,42 +267,42 @@ class Command(BaseCommand):
         user_30098941 = User.objects.get(username='30098941')
         university_members.append(UniversityMember(
             user=user_30098941,
-            ucid=30098941,
+            ucid='30098941',
             name='Justin Chua',
             email='justin.chua@ucalgary.ca',
-            password='justinisthebest',
+            password=make_password('justinisthebest'),
             address='123 Skyward Ave',
-            phone_no=4037998999
+            phone_no='4037998999'
         ))
         user_12312312 = User.objects.get(username='12312312')
         university_members.append(UniversityMember(
             user=user_12312312,
-            ucid=12312312,
+            ucid='12312312',
             name='Bob Dylan',
             email='bob.dylan@ucalgary.ca',
-            password='gobob123',
+            password=make_password('gobob123'),
             address='43 Irvine Blvd',
-            phone_no=5876819942
+            phone_no='5876819942'
         ))
         user_65465465 = User.objects.get(username='65465465')
         university_members.append(UniversityMember(
             user=user_65465465,
-            ucid=65465465,
+            ucid='65465465',
             name='Greg Oden',
             email='greg.oden@ucalgary.ca',
-            password='nbagreg',
+            password=make_password('nbagreg'),
             address='449 Hollywood Blvd',
-            phone_no=8196430001
+            phone_no='8196430001'
         ))
         user_99999999 = User.objects.get(username='99999999')
         university_members.append(UniversityMember(
             user=user_99999999,
-            ucid=99999999,
+            ucid='99999999',
             name='Perry Dingleberry',
             email='thedingleberry@ucalgary.ca',
-            password='berrydingle',
+            password=make_password('berrydingle'),
             address='448 Douglesdale Road',
-            phone_no=4418936891
+            phone_no='4418936891'
         ))
 
         for member in university_members:

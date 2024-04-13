@@ -1,6 +1,6 @@
 # todos/serializers.py
 from rest_framework import serializers
-from .models import Todo, UniversityMember, Vehicle, Color, Client
+from .models import Todo, UniversityMember, Vehicle, Color, Client, ParkingLot
 from rest_framework import exceptions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
@@ -16,7 +16,18 @@ class TodoSerializer(serializers.ModelSerializer):
         )
         model = Todo
         
-        
+class ParkingLotSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'lot_no',
+            'latitude',
+            'longitude',
+            'capacity',
+            'occupied_spaces',
+            'rate_type'
+        )
+        model = ParkingLot
+
 class UniversityMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniversityMember

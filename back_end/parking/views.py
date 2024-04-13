@@ -8,14 +8,19 @@ from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from .models import ParkingAdmin, Todo, UniversityMember, Vehicle, Color, Client  # Import Color model
+from .models import (
+    ParkingAdmin, Todo, UniversityMember, 
+    Vehicle, Color, Client,
+    ParkingLot)  # Import Color model
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
 from .authentication import UCIDAuthenticationBackend
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-from .serializers import ClientSerializer, TodoSerializer, UniversityMemberSerializer, UserSerializer, VehicleSerializer
+from .serializers import (
+    ClientSerializer, TodoSerializer, UniversityMemberSerializer, 
+    UserSerializer, VehicleSerializer, ParkingLotSerializer)
 
 
 class ListTodo(generics.ListCreateAPIView):
@@ -27,10 +32,15 @@ class DetailTodo(generics.RetrieveUpdateDestroyAPIView):
     queryset = Todo.objects.all()
     serializer_class = TodoSerializer
 
+class MapView(APIView):
+    # fetch all parking lots
+    def get(self, request):
+        parking_lot_set = ParkingLot.objects.all()
+        serializer = ParkingLotSerializer(parking_lot_set, many=True)
+        return Response(serializer.data)
 
 class SignupView(APIView):
     def post(self, request, format=None):
-        
         user_data = {
             'username': request.data.get('email'),  
             'email': request.data.get('email'),
@@ -104,12 +114,6 @@ class LoginView(APIView):
             return Response({'token': str(token.access_token)})
         else:
             return Response({'error': 'Token not generated'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-
-
-        
 
 
 class ProfileView(APIView):
