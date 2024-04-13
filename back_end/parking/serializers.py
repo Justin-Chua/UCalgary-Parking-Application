@@ -1,11 +1,9 @@
 # todos/serializers.py
 from rest_framework import serializers
-from .models import Ticket, Todo, UniversityMember, Vehicle, Color, Client
+from .models import Todo, UniversityMember, Vehicle, Color, Client, ParkingLot, Ticket, ParkingPermit, Reservation
 from rest_framework import exceptions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
-
-
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,7 +14,60 @@ class TodoSerializer(serializers.ModelSerializer):
         )
         model = Todo
         
-        
+class ParkingLotSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'lot_no',
+            'latitude',
+            'longitude',
+            'capacity',
+            'occupied_spaces',
+            'rate_type'
+        )
+        model = ParkingLot
+
+class TicketSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'ticket_no',
+            'notification_id',
+            'payment_no',
+            'client_ucid',
+            'admin_ucid',
+            'issue_date',
+            'due_date',
+            'offense',
+            'amount_due',
+            'paid'
+        )
+        model = Ticket
+
+class ParkingPermitSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'permit_no',
+            'client_ucid',
+            'admin_ucid',
+            'payment_no',
+            'pp_issue_date',
+            'pp_expiry_date',
+            'pp_amount_due'
+        )
+        model = ParkingPermit
+
+class ReservationSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'lot_no',
+            'client_ucid',
+            'payment_no',
+            'date',
+            'start_time',
+            'end_time',
+            'res_amount_due'
+        )
+        model = Reservation
+
 class UniversityMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = UniversityMember

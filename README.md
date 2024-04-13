@@ -9,6 +9,7 @@
 1. After installing, navigate to the back_end folder using `back_end`
 2. Install the necessary dependency using the following command:
     - 2.1. MySQLClient: `pip install mysqlclient`
+    - 2.2. Django REST Framework: `pip install djangorestframework djangorestframework-simplejwt`
 3. Ensure that XAMPP is open, and Apache and MySQL are running on port 3306
 4. Ensure that models are updated using the command `python manage.py migrate`
 5. Start the backend using the command `python manage.py runserver`
@@ -25,6 +26,7 @@
     - 2.3. Bootstrap: `npm install bootstrap react-bootstrap`
     - 2.4. Bootstrap Icons: `npm install react-bootstrap-icons`
     - 2.5. Leaflet: `npm install leaflet react-leaflet`
+    - 2.6. Axios: `npm install axios`
  3. To start the React application, use the command `npm start`
  4. The application will automatically open in a new browser window, on `localhost:3000`
 

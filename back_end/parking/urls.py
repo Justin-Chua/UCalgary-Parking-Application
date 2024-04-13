@@ -15,7 +15,8 @@ urlpatterns = [
     path('usersearch/', views.UserSearchView.as_view(), name='user_search'),
     path('check-admin-status/', views.CheckAdminStatus.as_view()),
     path('tickets/create/', views.TicketCreateView.as_view(), name='ticket-create'),
-    
-
-    
+    path('map/', views.MapView.as_view(), name='map'),
+    path('view-tickets/', views.TicketView.as_view(), name='view-tickets'),
+    path('view-permits/', views.ParkingPermitView.as_view(), name='view-permits'),
+    path('view-reservations/', views.ReservationView.as_view(), name='view-reservations')
 ]

@@ -14,9 +14,18 @@ class ParkingLot(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     capacity = models.PositiveSmallIntegerField()
     occupied_spaces = models.PositiveSmallIntegerField()
+    # specify flat rate, hourly + flat rate, or hourly + flat rate + reserved for parking lot
+    FLAT_RATE = 'FR'
+    HOURLY_PLUS_FLAT_RATE = 'H+FR'
+    parking_rates = [
+        (FLAT_RATE, 'Flat Rate'),
+        (HOURLY_PLUS_FLAT_RATE, 'Hourly + Flat Rate'),
+    ]
+    rate_type = models.CharField(max_length=50, choices=parking_rates, default=HOURLY_PLUS_FLAT_RATE)
 
 class ParkingSpace(models.Model):
-    lot_no = models.OneToOneField(
+    space_id = models.AutoField(primary_key=True, unique=True)
+    lot_no = models.ForeignKey(
         ParkingLot, to_field='lot_no', on_delete=models.CASCADE
     )
     zone = models.CharField(max_length=1)
@@ -104,7 +113,7 @@ class Patrols(models.Model):
         ]
 
 class Notification(models.Model):
-    notification_id = models.AutoField(primary_key=True)
+    notification_id = models.AutoField(primary_key=True, unique=True)
     client_ucid = models.ForeignKey(
         Client, to_field='client_ucid', on_delete=models.CASCADE
     )
@@ -170,7 +179,7 @@ class Reservation(models.Model):
         ParkingLot, to_field='lot_no', on_delete=models.CASCADE
     )
     client_ucid = models.ForeignKey(
-        UniversityMember, to_field='ucid', on_delete=models.SET_NULL, null=True
+        Client, to_field='client_ucid', on_delete=models.SET_NULL, null=True
     )
     payment_no = models.ForeignKey(
         Payment, to_field='payment_no', on_delete=models.CASCADE

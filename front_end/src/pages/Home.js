@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,38 +6,12 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Map from '../components/Map';
 
 function Home() {
-    const [todos, setTodos] = useState([]);
     const [modalShow, setModalShow] = React.useState(false);
-    
 
-    useEffect(() => {
-        console.log("Fetching data...");
-        const fetchData = async () => {
-            try {
-                const res = await fetch('http://127.0.0.1:8000/api/');
-                const todosData = await res.json();
-                console.log("Data fetched successfully:", todosData);
-                setTodos(todosData);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
-        fetchData();
-    }, []);
     return (
         <>
             <h3 id="page-header">View UCalgary Parking</h3>
             <Map />
-            <h2>Todo List</h2>
-            <ul>
-                {todos.map(item => (
-                    <li key={item.id}>
-                        <h5>{item.title}</h5>
-                        <p>{item.description}</p>
-                    </li>
-                ))}
-            </ul>
             <div>
                 <Button variant="danger" onClick={() => setModalShow(true)}>Test</Button>
                 <ReserveModal show={modalShow} onHide={() => setModalShow(false)}/>
@@ -53,8 +27,6 @@ function ReserveModal(props) {
     const [fromDate, setFromDate] = React.useState("");
     const [toDate, setToDate] = React.useState("");
     
-
-
     const [nameError, setnameErrorMessage] = React.useState("");
     const [ucidError, setucidErrorMessage] = React.useState("");
     const [plateError, setplateErrorMessage] = React.useState("");
@@ -95,7 +67,7 @@ function ReserveModal(props) {
         let ToMin = "";
 
         let timePeriod = 0;
-        if(name.length == 0){
+        if(name.length === 0){
             setnameErrorMessage('Name is required');
             validation = false;
         }
@@ -103,11 +75,11 @@ function ReserveModal(props) {
             setnameErrorMessage('');
         }
 
-        if(ucid.length == 0){
+        if(ucid.length === 0){
             setucidErrorMessage('UCID is required');
             validation = false;
         }
-        else if(ucid.length != 8){
+        else if(ucid.length !== 8){
             setucidErrorMessage('Invalid UCID');
             validation = false;
         }
@@ -116,7 +88,7 @@ function ReserveModal(props) {
             setucidErrorMessage('');
         }
 
-        if(plate.length == 0){
+        if(plate.length === 0){
             setplateErrorMessage('License plate is required');
             validation = false;
         }
@@ -124,22 +96,20 @@ function ReserveModal(props) {
             setplateErrorMessage('');
         }
 
-        if(fromDate.length == 0){
+        if(fromDate.length === 0){
             setfromDateErrorMessage('Date is required');
         }
         else{
             setfromDateErrorMessage('');
         }
-        if(toDate.length == 0){
+        if(toDate.length === 0){
             settoDateErrorMessage('Date is required');
         }
         else{
             settoDateErrorMessage('');
         }
 
-
-
-        if(fromDate.length != 0 && toDate.length != 0){
+        if(fromDate.length !== 0 && toDate.length !== 0){
 
             settoDateErrorMessage('');
             setfromDateErrorMessage('');
@@ -187,11 +157,11 @@ function ReserveModal(props) {
             else if(FromMin > ToMin){
                 settoDateErrorMessage('Time Period is invalid');
             }
-            else if(FromYear == ToYear){
-                if(FromMonth == ToMonth){
-                    if(FromDay == ToDay){
+            else if(FromYear === ToYear){
+                if(FromMonth === ToMonth){
+                    if(FromDay === ToDay){
                         timePeriod = ((ToMin - FromMin) + ((ToHour - FromHour) * 60));
-                        if(FromHour == ToHour){
+                        if(FromHour === ToHour){
                             if((ToMin - FromMin) < 15){
                                 settoDateErrorMessage('Please choose longer period');
                             }
@@ -215,7 +185,7 @@ function ReserveModal(props) {
         }
 
 
-        if(validation == true){
+        if(validation === true){
 
             window.location.href = '/payment';
         }
@@ -263,8 +233,6 @@ function ReserveModal(props) {
                                 </svg>
                             </span>
                             <input type='datetime-local' class="form-control" placeholder='01/01 00:00' onChange={(e) => setFromDate(e.target.value)} required/>
-                            
-                            
                         </div>
                         {fromDateError && <div className="error text-danger"> {fromDateError} </div>}
                     </div>
