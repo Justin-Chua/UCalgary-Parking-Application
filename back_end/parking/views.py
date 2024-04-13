@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import (
     ParkingAdmin, Todo, UniversityMember, 
     Vehicle, Color, Client,
-    ParkingLot)  # Import Color model
+    ParkingLot, Ticket)  # Import Color model
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
@@ -20,7 +20,7 @@ from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from .serializers import (
     ClientSerializer, TodoSerializer, UniversityMemberSerializer, 
-    UserSerializer, VehicleSerializer, ParkingLotSerializer)
+    UserSerializer, VehicleSerializer, ParkingLotSerializer, TicketSerializer)
 
 
 class ListTodo(generics.ListCreateAPIView):
@@ -37,6 +37,15 @@ class MapView(APIView):
     def get(self, request):
         parking_lot_set = ParkingLot.objects.all()
         serializer = ParkingLotSerializer(parking_lot_set, many=True)
+        return Response(serializer.data)
+    
+class TicketView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        client = Client.objects.get(client_ucid__user=request.user)
+        user_tickets = Ticket.objects.filter(client_ucid=client)
+        serializer = TicketSerializer(user_tickets, many=True)
         return Response(serializer.data)
 
 class SignupView(APIView):
@@ -216,8 +225,6 @@ class DeleteVehicleView(APIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        
-        
 class UserSearchView(APIView):
     def get(self, request):
         license_plate = request.query_params.get('licensePlate')
@@ -236,7 +243,6 @@ class UserSearchView(APIView):
         serialized_data['plateNumber'] = license_plate  # Add the plate number to the serialized data
         
         return Response(serialized_data)
-    
     
 class CheckAdminStatus(APIView):
     def get(self, request):
