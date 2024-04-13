@@ -245,6 +245,48 @@ class DeleteVehicleView(APIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+
+class MapPopupView(APIView):
+    def get(self, request):
+        lot_no = request.query_params.get('lot_no')
+        park_lot = ParkingLot.objects.filter(lot_no=lot_no)
+        if not park_lot.exists():
+            return Response({'error': 'No parking lot found with the provided lot number'}, status=404)
+        serializer = ParkingLotSerializer(park_lot, many=True)
+        return Response(serializer.data)
+    
+class VehiclesDataView(APIView):
+    
+    def get(self, request):
+        plate_no = request.query_params.get('plate_no')
+        platenumber = Vehicle.objects.filter(plate_no=plate_no)
+        if not platenumber.exists():
+            return Response({'error': 'No vehicle found with the provided plate number'}, status=404)
+        serializer = VehiclesDataSerializer(platenumber, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        
+        try:
+            plate_no = request.query_params.get('plate_no')
+            vehicle_data = Vehicle.objects.get(plate_no=plate_no)
+            
+            lot_no_str = request.data.get('lot_no')  # Access lot_no from request data
+            
+            # Fetch ParkingLot instance corresponding to the lot_no string
+            parking_lot = ParkingLot.objects.get(lot_no=lot_no_str)
+            
+            # Assign ParkingLot instance to the Vehicle's lot_no field
+            vehicle_data.lot_no = parking_lot
+            vehicle_data.save()  # Save the changes
+            
+        except Vehicle.DoesNotExist:
+            return Response({'error': 'No vehicle found with the provided plate number'}, status=404)
+        except ParkingLot.DoesNotExist:
+            return Response({'error': 'No parking lot found with the provided lot number'}, status=404)
+        
+        return Response({'message': 'Lot number added successfully'})
+   
 class UserSearchView(APIView):
     def get(self, request):
         license_plate = request.query_params.get('licensePlate')
@@ -289,3 +331,4 @@ class TicketCreateView(APIView):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

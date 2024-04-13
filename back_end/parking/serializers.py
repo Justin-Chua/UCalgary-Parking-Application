@@ -107,6 +107,11 @@ class VehicleSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
+class VehiclesDataSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Vehicle
+            fields = ['plate_no', 'make', 'model', 'lot_no_id', 'owner']
+
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
@@ -117,3 +122,4 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = '__all__'
+
