@@ -8,11 +8,12 @@ from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Max
 from .models import (
-    ParkingAdmin, UniversityMember, Vehicle, 
-    Color, Client, ParkingLot, 
-    Ticket, ParkingPermit, Reservation, 
-    Notification)
+    ParkingAdmin, UniversityMember, 
+    Vehicle, Color, Client, Payment,
+    ParkingLot, Ticket, ParkingPermit,
+    Reservation, Notification)  # Import Color model
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
@@ -23,7 +24,7 @@ from .serializers import (
     ClientSerializer, UniversityMemberSerializer, 
     UserSerializer, VehicleSerializer, ParkingLotSerializer, 
     TicketSerializer, ParkingPermitSerializer, ReservationSerializer,
-    NotificationSerializer)
+    PaymentSerializer, VehiclesDataSerializer, NotificationSerializer)
 
 class MapView(APIView):
     # fetch all parking lots
@@ -50,6 +51,9 @@ class ParkingPermitView(APIView):
         serializer = ParkingPermitSerializer(user_permits, many=True)
         return Response(serializer.data)
     
+    
+        
+    
 class ReservationView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -57,7 +61,36 @@ class ReservationView(APIView):
         client = Client.objects.get(client_ucid__user=request.user)
         user_reservations = Reservation.objects.filter(client_ucid=client)
         serializer = ReservationSerializer(user_reservations, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data) 
+    
+class MakeReservationView(APIView):  
+    def post(self, request):
+        client_ucid = request.data.get('client_ucid')
+        ucidClient = Client.objects.get(client_ucid_id=client_ucid)
+        payment = Payment.objects.filter(client_ucid_id=client_ucid)
+        max_number = payment.aggregate(Max('payment_no'))['payment_no__max']  # Returns the highest number.
+        latest_payment = Payment.objects.get(payment_no=max_number)  # Filter all payment by this number.
+        latest_payment_no = latest_payment.payment_no
+        
+        reserve_data = {
+            'lot_no':request.data.get('lot_no'),
+            'client_ucid': ucidClient,
+            'payment_no': latest_payment_no, 
+            'date': request.data.get('date'), 
+            'start_time':request.data.get('start_time'), 
+            'end_time': request.data.get('end_time'),
+            'res_amount_due':request.data.get('res_amount_due')
+        }
+
+        reserve_serializer = ReservationSerializer(data=reserve_data)
+        print("reservation validation: ",reserve_serializer.is_valid())
+        if reserve_serializer.is_valid():
+            reserve_serializer.save()
+            return Response(reserve_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print("reserve Serializer Errors:", reserve_serializer.errors)
+            return Response(reserve_serializer.errors, status=status.HTTP_400_BAD_REQUEST)      
+
     
 class NotificationView(APIView):
     permission_classes = [IsAuthenticated]
@@ -75,6 +108,7 @@ class NotificationView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Notification.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
     
 class SignupView(APIView):
     def post(self, request, format=None):
@@ -283,6 +317,7 @@ class VehiclesDataView(APIView):
             
             # Fetch ParkingLot instance corresponding to the lot_no string
             parking_lot = ParkingLot.objects.get(lot_no=lot_no_str)
+
             
             # Assign ParkingLot instance to the Vehicle's lot_no field
             vehicle_data.lot_no = parking_lot
@@ -351,6 +386,31 @@ class TicketCreateView(APIView):
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class PaymentView(APIView):
+
+    def post(self, request):
+            
+        client_ucid = request.data.get('client_ucid')
+        ucidClient = Client.objects.get(client_ucid_id=client_ucid)
+        
+        payment_data = {
+            'client_ucid':client_ucid,
+            'cc_holder': request.data.get('cc_holder'), 
+            'cc_number': request.data.get('cc_number'), 
+            'cvc': request.data.get('cvc'), 
+            'cc_expiry_month':request.data.get('cc_expiry_month'), 
+            'cc_expiry_year': request.data.get('cc_expiry_year')
+        }
+
+        payment_serializer = PaymentSerializer(data=payment_data)
+
+        if payment_serializer.is_valid():
+            payment_serializer.save()
+            return Response(payment_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print("Payment Serializer Errors:", payment_serializer.errors)
+            return Response(payment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ClientConditionsChecker(APIView):
