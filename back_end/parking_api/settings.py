@@ -57,7 +57,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'USER_ID_FIELD': 'ucid',
     'USER_ID_FIELD': 'username',
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20),
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=15),
 }
 
 AUTHENTICATION_BACKENDS = [
