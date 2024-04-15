@@ -124,27 +124,33 @@ function Header() {
                         <DropdownButton id="dropdown-button" align="end" variant="transparent" title={<BellFill className="icon-size" />}>
                             <Dropdown.ItemText id="dropdown-item-text"><h4>Notifications</h4></Dropdown.ItemText>
                             <Dropdown.Divider />
-                            {userNotifications.map(notification => (
-                                <Dropdown.Item id="dropdown-item"
-                                key={ notification.notification_id }
-                                onClick={() => handleItemClick(notification.title)}
-                                >
-                                    <Container id="dropdown-item-text">
-                                        <Row>
-                                            <Col>
-                                                <h6>{ notification.title }</h6>
-                                                <p>{ notification.message }</p>
-                                            </Col>
-                                            <Col xs="auto">
-                                                <button 
-                                                onClick={(event) => handleDeleteDiscussion(event, notification.notification_id)}>
-                                                    Dismiss
-                                                </button>
-                                            </Col>
-                                        </Row>
-                                    </Container>
-                                </Dropdown.Item>
-                            ))}
+                            {userNotifications.length > 0 ? (
+                                userNotifications.map(notification => (
+                                    <Dropdown.Item id="dropdown-item"
+                                    key={ notification.notification_id }
+                                    onClick={() => handleItemClick(notification.title)}
+                                    >
+                                        <Container id="dropdown-item-text">
+                                            <Row>
+                                                <Col>
+                                                    <h6>{ notification.title }</h6>
+                                                    <p>{ notification.message }</p>
+                                                </Col>
+                                                <Col xs="auto">
+                                                    <button 
+                                                    onClick={(event) => handleDeleteDiscussion(event, notification.notification_id)}>
+                                                        Dismiss
+                                                    </button>
+                                                </Col>
+                                            </Row>
+                                        </Container>
+                                    </Dropdown.Item>
+                                ))
+                            ) : (
+                                <Container id="dropdown-item-text" className="text-align-center">
+                                    <Dropdown.ItemText style={{ textAling: 'center' }}>No Notifications</Dropdown.ItemText>
+                                </Container>
+                            )}
                         </DropdownButton>
                     )}
                     <NavLink href={isLoggedIn ? "/profile" : "/login"}>
