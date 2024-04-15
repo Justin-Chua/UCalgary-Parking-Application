@@ -15,13 +15,18 @@ function Payment() {
     const params = new URLSearchParams(location.search);
     const lot_no = params.get("lot_no");
     const plate_no = params.get("plate_no");
+    const ucid = params.get("ucid");
+    const FromDate = params.get("date");
+    const start_time = params.get("start_time");
+    const end_time = params.get("end_time");
+    const res_amount_due = params.get("res_amount_due");
 
-    const [name, setName] = React.useState("");
-    const [number, setNumber] = React.useState("");
+    const [name, setName] = React.useState('');
+    const [number, setNumber] = React.useState('');
     const [date, setDate] = React.useState("");
-    const [cvv, setCvv] = React.useState("");
+    const [cvv, setCvv] = React.useState('');
 
-    const [nameError, setnameErrorMessage] = React.useState("");
+    const [nameError, setnameErrorMessage] = React.useState('');
     const [numberError, setnumberErrorMessage] = React.useState("");
     const [dateError, setdateErrorMessage] = React.useState("");
     const [cvvError, setcvvErrorMessage] = React.useState("");
@@ -126,8 +131,50 @@ function Payment() {
     
         if(validation == true){
 
+            const reserveData = {
+                lot_no: lot_no,
+                client_ucid: ucid,
+                payment_no: '99999999',
+                date: FromDate,
+                start_time: start_time,
+                end_time: end_time,
+                res_amount_due: res_amount_due
+            }
+
+            console.log('reserve data:', reserveData);
+            axios.post('http://127.0.0.1:8000/api/view-reservations/', reserveData) 
+                .then(response => {
+                    console.log('Reserve added:', response.data);
+                })
+                .catch(error => {
+                    console.log(reserveData);
+                    console.error('Error creating reserve:', error);
+                })
+
+            const paymentData = {
+                client_ucid: ucid,
+                cc_holder: name,
+                cc_number: number,
+                cvc: cvv,
+                cc_expiry_month: ccMM,
+                cc_expiry_year: ccYY
+            }
+
+            
+            console.log('payment data:', paymentData);
+            axios.post('http://127.0.0.1:8000/api/payment/', paymentData) 
+                .then(response => {
+                    console.log('Payment added:', response.data);
+                })
+                .catch(error => {
+                    console.log(paymentData);
+                    console.error('Error creating payment:', error);
+                })
+           
+
             try {
                 // Assuming the plate_no should be part of the endpoint query and lot_no in the body
+                
                 const response = await axios.post(`http://127.0.0.1:8000/api/vehicles-data/?plate_no=${plate_no}`, {lot_no});
                 console.log(lot_no);
                 if (response.status === 200) {
@@ -135,7 +182,7 @@ function Payment() {
                     setTimeout(() => {
                         setSuccessMessage('');
                         // Redirect to 'reservation/' upon successful payment
-                        window.location.href = '/reservation/';
+                        //window.location.href = '/reservation/';
                     }, 3000);
                 } else {
                     // This else block may never be hit because Axios throws for status codes outside the 2xx range
