@@ -131,26 +131,6 @@ function Payment() {
     
         if(validation == true){
 
-            const reserveData = {
-                lot_no: lot_no,
-                client_ucid: ucid,
-                payment_no: '99999999',
-                date: FromDate,
-                start_time: start_time,
-                end_time: end_time,
-                res_amount_due: res_amount_due
-            }
-
-            console.log('reserve data:', reserveData);
-            axios.post('http://127.0.0.1:8000/api/view-reservations/', reserveData) 
-                .then(response => {
-                    console.log('Reserve added:', response.data);
-                })
-                .catch(error => {
-                    console.log(reserveData);
-                    console.error('Error creating reserve:', error);
-                })
-
             const paymentData = {
                 client_ucid: ucid,
                 cc_holder: name,
@@ -160,17 +140,57 @@ function Payment() {
                 cc_expiry_year: ccYY
             }
 
-            
-            console.log('payment data:', paymentData);
-            axios.post('http://127.0.0.1:8000/api/payment/', paymentData) 
-                .then(response => {
-                    console.log('Payment added:', response.data);
-                })
-                .catch(error => {
-                    console.log(paymentData);
-                    console.error('Error creating payment:', error);
-                })
+            let makePayment = async () => {
+                console.log('payment data:', paymentData);
+                try{
+                    const response = await axios.post('http://127.0.0.1:8000/api/payment/', paymentData) 
+                    if (response.status === 200) {
+                        setSuccessMessage('Payment added.');
+                        setTimeout(() => {
+                            setSuccessMessage('');
+                            // Redirect to 'reservation/' upon successful payment
+                            window.location.href = '/reservation/';
+                        }, 3000);
+                    } else {
+                        // This else block may never be hit because Axios throws for status codes outside the 2xx range
+                        //setErrorMessage('Failed to add reservation.');
+                    }
+                }catch (error) {
+                    console.error('Error adding payment:', error);
+                    setErrorMessage('Failed to add payment. Error: ' + (error.response?.data?.message || error.message));
+                }
+                
+            }
+
            
+            const reserveData = {
+                lot_no: lot_no,
+                client_ucid: ucid,
+                payment_no: '',
+                date: FromDate,
+                start_time: start_time,
+                end_time: end_time,
+                res_amount_due: Number(res_amount_due)
+            }
+
+            console.log('reserve data:', reserveData);
+            try{
+                let wait = await makePayment();
+                const response = await axios.post(`http://127.0.0.1:8000/api/make-reservations/?ucid=${ucid}`, reserveData);
+                if (response.status === 200) {
+                    setSuccessMessage('Reservation added.');
+                    setTimeout(() => {
+                        setSuccessMessage('');
+                        
+                    }, 3000);
+                } else {
+                    // This else block may never be hit because Axios throws for status codes outside the 2xx range
+                    setErrorMessage('Failed to add reservation.');
+                }
+            }catch (error) {
+                console.error('Error adding reservation:', error);
+                setErrorMessage('Failed to add reservation. Error: ' + (error.response?.data?.message || error.message));
+            }
 
             try {
                 // Assuming the plate_no should be part of the endpoint query and lot_no in the body
@@ -182,7 +202,7 @@ function Payment() {
                     setTimeout(() => {
                         setSuccessMessage('');
                         // Redirect to 'reservation/' upon successful payment
-                        //window.location.href = '/reservation/';
+                        window.location.href = '/reservation/';
                     }, 3000);
                 } else {
                     // This else block may never be hit because Axios throws for status codes outside the 2xx range
@@ -199,7 +219,6 @@ function Payment() {
     }
     return (
         <div>
-            {/* <h2 class="paymenttitle">Payment</h2>  */}
             <div class="paymentpage">
                 <div class="row justify-content-center">
                     <div class="col-md-6 mb-3">
@@ -222,7 +241,6 @@ function Payment() {
                         
                         {numberError && <div className="error text-danger"> {numberError} </div>}
                     </div>
-                    {/* {cardType && <small className="type"> {cardType} </small>} */}
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-md-3 mb-3">
@@ -245,5 +263,6 @@ function Payment() {
             </div>
     );
 }
+
 
 export default Payment;

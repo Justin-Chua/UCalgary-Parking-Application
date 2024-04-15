@@ -131,17 +131,29 @@ class Payment(models.Model):
         Client, to_field='client_ucid', on_delete=models.CASCADE
     )
     cc_holder = models.CharField(max_length=200)
-    cc_number = models.PositiveIntegerField(
-        validators=[MinLengthValidator(12), MaxLengthValidator(19)]
+    cc_number = models.CharField(
+        primary_key=False,
+        validators=[
+            MinLengthValidator(12),
+            MaxLengthValidator(19),
+            RegexValidator(regex=r'^\d{12,19}$', message="Credit number must be between 12 and 19 digits long")
+        ],
+        max_length=19
     )
-    cvc = models.PositiveSmallIntegerField(
-        validators=[MinLengthValidator(3), MaxLengthValidator(3)]
+    cvc = models.CharField(
+        primary_key=False,
+        validators=[
+            MinLengthValidator(3),
+            MaxLengthValidator(3),
+            RegexValidator(regex='^\d{3}$', message="Cvc must be 3 digits long")
+        ],
+        max_length=3
     )
     cc_expiry_month = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(12)]
     )
     cc_expiry_year = models.PositiveSmallIntegerField(
-        validators=[MinLengthValidator(2), MaxLengthValidator(2)]
+        validators=[MinValueValidator(0), MaxValueValidator(99)]
     )
     
 class Ticket(models.Model):
