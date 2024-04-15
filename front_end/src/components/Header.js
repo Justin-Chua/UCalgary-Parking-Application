@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, Container, Nav, NavLink } from 'react-bootstrap';
-import { HouseDoorFill, TicketDetailedFill, PCircleFill, CalendarCheckFill, PersonFill } from 'react-bootstrap-icons';
+import { Navbar, Container, Nav, NavLink, Dropdown, DropdownButton } from 'react-bootstrap';
+import { HouseDoorFill, TicketDetailedFill, PCircleFill, CalendarCheckFill, PersonFill, BellFill } from 'react-bootstrap-icons';
 import logo from '../assets/ucalgary-logo.png';
 import axios from 'axios'; 
 
@@ -42,14 +42,14 @@ function Header() {
     };
 
     return (
-        <Navbar className="header justify-content-start flex-grow-1">
+        <Navbar className="header justify-content-start align-items-center flex-grow-1">
             <Container>
                 <Navbar.Brand href="/">
                     <img src={logo} className="school-logo d-inline-block align-top" alt="Logo" />
                 </Navbar.Brand>
             </Container>
             <Container>
-                <Nav className="justify-content-center flex-grow-1">
+                <Nav className="justify-content-center align-items-center flex-grow-1">
                     {isAdmin ? (
                         <NavLink className="center-nav-element" href="/usersearch">
                             <HouseDoorFill className="icon-size" />
@@ -75,9 +75,26 @@ function Header() {
                 </Nav>
             </Container>
             <Container>
-                <Nav className="justify-content-end flex-grow-1">
+                <Nav className="justify-content-end align-items-center flex-grow-1">
                     {isLoggedIn ? ( 
-                        <>
+                        <>  
+                            {/* Currently hardcoded */}
+                            <DropdownButton id="dropdown-button" align="end" variant="transparent" title={<BellFill className="icon-size" />}>
+                                <Dropdown.Item id="dropdown-item">
+                                    <h5>Parking Ticket Received</h5>
+                                    <p> You have received a parking ticket! What in the world are you doing kid! </p>
+                                </Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item id="dropdown-item">
+                                    <h5>Parking Permit Revoked</h5>
+                                    <p> Your permit has been revoked! What in the world are you doing kid! </p>
+                                </Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item id="dropdown-item">
+                                    <h5>Parking Ticket Overdue</h5>
+                                    <p> Your ticket is overdue! What in the world are you doing kid! </p>
+                                </Dropdown.Item>
+                            </DropdownButton>
                             <NavLink href="/profile">
                                 <PersonFill className="icon-size" />
                             </NavLink>

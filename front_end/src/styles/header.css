@@ -3,6 +3,18 @@
     margin-top: 5vh;
 }
 
+#dropdown-button {
+    margin: 0px 0.5vw;
+    padding: 0px 0.5vw;
+    border: none;
+}
+
+#dropdown-item {
+    width: 450px;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
 .school-logo {
     height: 40px;
     width: auto;
