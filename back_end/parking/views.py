@@ -9,7 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from .models import (
-    ParkingAdmin, Todo, UniversityMember, 
+    Notification, ParkingAdmin, Todo, UniversityMember, 
     Vehicle, Color, Client,
     ParkingLot, Ticket, ParkingPermit,
     Reservation)  # Import Color model
@@ -22,7 +22,7 @@ from django.shortcuts import get_object_or_404
 from .serializers import (
     ClientSerializer, TodoSerializer, UniversityMemberSerializer, 
     UserSerializer, VehicleSerializer, ParkingLotSerializer, 
-    TicketSerializer, ParkingPermitSerializer, ReservationSerializer)
+    TicketSerializer, ParkingPermitSerializer, ReservationSerializer, VehiclesDataSerializer)
 
 
 class ListTodo(generics.ListCreateAPIView):
@@ -319,16 +319,28 @@ class CheckAdminStatus(APIView):
         
         
 class TicketCreateView(APIView):
-    permission_classes = [IsAuthenticated]  # Ensure user is authenticated
+    permission_classes = [IsAuthenticated]  
 
     def post(self, request):
         serializer = TicketSerializer(data=request.data)
         if serializer.is_valid():
-            # Assign the admin_ucid to the logged-in user
-            request.data['admin_ucid'] = request.user.universitymember
-            serializer = TicketSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            client_ucid = serializer.validated_data['client_ucid']
+            
+            # Retrieve the ParkingAdmin instance associated with the logged-in user's university member
+            admin_ucid = ParkingAdmin.objects.get(admin_ucid=request.user.universitymember)
+            
+            ticket = serializer.save(admin_ucid=admin_ucid)
+            
+            # Create a notification for the client
+            notification = Notification.objects.create(
+                client_ucid=client_ucid,
+                title="Parking Ticket Received",
+                message="You have received a new parking ticket.",
+            )
+            
+            ticket.notification_id = notification  # Associate the ticket with the notification
+            ticket.save()
+            
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
