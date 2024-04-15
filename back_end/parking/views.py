@@ -344,3 +344,26 @@ class TicketCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ClientConditionsChecker(APIView):
+    def get(self, request):
+        client_ucid = request.query_params.get('client_ucid')
+        if not client_ucid:
+            return Response({'error': 'Client UCID parameter is missing'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        permit_exists, ticket_count = self.check_client_conditions(client_ucid)
+        return Response({'permit_exists': permit_exists, 'ticket_count': ticket_count})
+
+    def check_client_conditions(self, client_ucid):
+        client = Client.objects.get(client_ucid=client_ucid)
+        permit_exists = ParkingPermit.objects.filter(client_ucid=client).exists()
+        ticket_count = Ticket.objects.filter(client_ucid=client).count()
+        return permit_exists, ticket_count
+    
+    
+class RevokePermitView(APIView):
+    def delete(self, request):
+        client_ucid = request.data.get('client_ucid')
+        permit = get_object_or_404(ParkingPermit, client_ucid=client_ucid)
+        permit.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

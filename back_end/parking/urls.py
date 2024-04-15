@@ -20,5 +20,7 @@ urlpatterns = [
     path('map-popup/', views.MapPopupView.as_view(), name='map-popup'),
     path('view-tickets/', views.TicketView.as_view(), name='view-tickets'),
     path('view-permits/', views.ParkingPermitView.as_view(), name='view-permits'),
-    path('view-reservations/', views.ReservationView.as_view(), name='view-reservations')
+    path('view-reservations/', views.ReservationView.as_view(), name='view-reservations'),
+    path('client_conditions/', views.ClientConditionsChecker.as_view(), name='client_conditions'),
+    path('revoke-permit/', views.RevokePermitView.as_view(), name='revoke_permit'),
 ]
