@@ -388,14 +388,15 @@ class Command(BaseCommand):
                 your parking permit has been revoked.'
         ))
 
-        primary_key = 1
         for notification in notifications:
-            if not Notification.objects.filter(pk=primary_key).exists():
+            if not Notification.objects.filter(
+            client_ucid=notification.client_ucid,
+            title=notification.title,
+            message=notification.message).exists():
                 notification.save()
-                self.stdout.write(self.style.SUCCESS(f'Notification with PK {notification.pk} created successfully.'))
+                self.stdout.write(self.style.SUCCESS(f'Notification for {notification.client_ucid} created successfully.'))
             else:
                 self.stdout.write(self.style.WARNING(f'Notification for {notification.client_ucid} already exists.'))
-            primary_key += 1
     
     def seed_payments(self):
         payments = []
@@ -446,7 +447,7 @@ class Command(BaseCommand):
         for payment in payments:
             if not Payment.objects.filter(pk=primary_key).exists():
                 payment.save()
-                self.stdout.write(self.style.SUCCESS(f'Payment with PK {payment.pk} created successfully.'))
+                self.stdout.write(self.style.SUCCESS(f'Payment for {payment.client_ucid} created successfully.'))
             else:
                 self.stdout.write(self.style.WARNING(f'Payment for {payment.client_ucid} already exists.'))
             primary_key += 1
@@ -494,14 +495,21 @@ class Command(BaseCommand):
             paid=False
         ))
 
-        primary_key = 1
         for ticket in tickets:
-            if not Ticket.objects.filter(pk=primary_key).exists():
+            if not Ticket.objects.filter(            
+            notification_id=ticket.notification_id,
+            payment_no=ticket.payment_no,
+            client_ucid=ticket.client_ucid,
+            admin_ucid=ticket.admin_ucid,
+            issue_date=ticket.issue_date,
+            due_date=ticket.due_date,
+            offense=ticket.offense,
+            amount_due=ticket.amount_due,
+            paid=ticket.paid).exists():
                 ticket.save()
-                self.stdout.write(self.style.SUCCESS(f'Ticket with PK {ticket.pk} created successfully.'))
+                self.stdout.write(self.style.SUCCESS(f'Ticket for {ticket.client_ucid} created successfully.'))
             else:
                 self.stdout.write(self.style.WARNING(f'Ticket for {ticket.client_ucid} already exists.'))
-            primary_key += 1
         
     def seed_parking_permits(self):
         permits = []
@@ -527,14 +535,18 @@ class Command(BaseCommand):
             pp_amount_due=500       
         ))
 
-        primary_key = 1
         for permit in permits:
-            if not ParkingPermit.objects.filter(pk=primary_key).exists():
+            if not ParkingPermit.objects.filter(            
+            client_ucid=permit.client_ucid,
+            admin_ucid=permit.admin_ucid,
+            payment_no=permit.payment_no,
+            pp_issue_date=permit.pp_issue_date,
+            pp_expiry_date=permit.pp_expiry_date,
+            pp_amount_due=permit.pp_amount_due).exists():
                 permit.save()
                 self.stdout.write(self.style.SUCCESS(f'ParkingPermit for {permit.client_ucid} created successfully.'))
             else:
                 self.stdout.write(self.style.WARNING(f'ParkingPermit for {permit.client_ucid} already exists.'))
-            primary_key += 1
     
     def seed_reservations(self):
         reservations = []
