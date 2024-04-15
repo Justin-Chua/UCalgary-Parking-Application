@@ -68,6 +68,14 @@ class NotificationView(APIView):
         serializer = NotificationSerializer(user_notifications, many=True)
         return Response(serializer.data)
     
+    def delete(self, request):
+        try:
+            notification = Notification.objects.get(notification_id=request.data.get('id'))
+            notification.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Notification.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    
 class SignupView(APIView):
     def post(self, request, format=None):
         user_data = {

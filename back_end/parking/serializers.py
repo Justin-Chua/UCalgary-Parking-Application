@@ -62,7 +62,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
-            'notification_id'
+            'notification_id',
             'client_ucid',
             'title',
             'message'

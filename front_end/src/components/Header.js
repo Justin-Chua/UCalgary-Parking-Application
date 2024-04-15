@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, Container, Nav, NavLink, Dropdown, DropdownButton } from 'react-bootstrap';
+import { Row, Col, Navbar, Container, Nav, NavLink, Dropdown, DropdownButton } from 'react-bootstrap';
 import { HouseDoorFill, TicketDetailedFill, PCircleFill, CalendarCheckFill, PersonFill, BellFill } from 'react-bootstrap-icons';
 import logo from '../assets/ucalgary-logo.png';
 import axios from 'axios'; 
@@ -22,11 +22,12 @@ function Header() {
                 console.error('Error checking admin status:', error); 
             });
         // if user is logged in and not an admin, perform fetch to user notifications
-        if (!isAdmin && isLoggedIn) fetchUserNotifications(token);
+        if (!isAdmin && isLoggedIn) fetchUserNotifications();
     }, [isAdmin, isLoggedIn]);
 
-    const fetchUserNotifications = async (token) => {
+    const fetchUserNotifications = async () => {
         try {
+            const token = localStorage.getItem('token'); 
             if (!token) {
                 console.error('Token not found');
                 return;
@@ -41,6 +42,34 @@ function Header() {
         } catch (error) {
             console.log(error);
         }
+    };
+
+    const handleDeleteDiscussion = async (event, notification_id) => {
+        event.stopPropagation();
+        try {
+            const token = localStorage.getItem('token'); 
+            if (!token) {
+                console.error('Token not found');
+                return;
+            }
+            await axios.delete('http://127.0.0.1:8000/api/view-notifications/', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                data: { id: notification_id }
+            });
+            fetchUserNotifications();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleItemClick = (title) => {
+        if (title.includes("Ticket"))
+            window.location.href = "/ticket";
+        else
+            window.location.href = "/permit";
     };
 
     const handleLogout = async () => {
@@ -71,15 +100,9 @@ function Header() {
             </Container>
             <Container>
                 <Nav className="justify-content-center align-items-center flex-grow-1">
-                    {isAdmin ? (
-                        <NavLink className="center-nav-element" href="/usersearch">
-                            <HouseDoorFill className="icon-size" />
-                        </NavLink>
-                    ) : (
-                        <NavLink className="center-nav-element" href="/">
-                            <HouseDoorFill className="icon-size" />
-                        </NavLink>
-                    )}
+                    <NavLink className="center-nav-element" href={isAdmin ? "/usersearch" : "/"}>
+                        <HouseDoorFill className="icon-size" />
+                    </NavLink>
                     {!isAdmin && isLoggedIn && (
                         <>
                             <NavLink className="center-nav-element" href="/ticket">
@@ -97,30 +120,37 @@ function Header() {
             </Container>
             <Container>
                 <Nav className="justify-content-end align-items-center flex-grow-1">
-                    {isLoggedIn ? ( 
-                        <>  
-                            {!isAdmin && (
-                                <DropdownButton id="dropdown-button" align="end" variant="transparent" title={<BellFill className="icon-size" />}>
-                                    {userNotifications.map(notification => (
-                                        <>
-                                            <Dropdown.Item id="dropdown-item" key={ notification.notification_id }>
-                                                <h5>{ notification.title }</h5>
+                    {isLoggedIn && !isAdmin && ( 
+                        <DropdownButton id="dropdown-button" align="end" variant="transparent" title={<BellFill className="icon-size" />}>
+                            <Dropdown.ItemText id="dropdown-item-text"><h4>Notifications</h4></Dropdown.ItemText>
+                            <Dropdown.Divider />
+                            {userNotifications.map(notification => (
+                                <Dropdown.Item id="dropdown-item"
+                                key={ notification.notification_id }
+                                onClick={() => handleItemClick(notification.title)}
+                                >
+                                    <Container id="dropdown-item-text">
+                                        <Row>
+                                            <Col>
+                                                <h6>{ notification.title }</h6>
                                                 <p>{ notification.message }</p>
-                                            </Dropdown.Item>
-                                        </>
-                                    ))}
-                                </DropdownButton>
-                            )}
-                            <NavLink href="/profile">
-                                <PersonFill className="icon-size" />
-                            </NavLink>
-                            <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
-                        </>
-                    ) : ( 
-                        <NavLink href="/login">
-                            <PersonFill className="icon-size" />
-                        </NavLink>
+                                            </Col>
+                                            <Col xs="auto">
+                                                <button 
+                                                onClick={(event) => handleDeleteDiscussion(event, notification.notification_id)}>
+                                                    Dismiss
+                                                </button>
+                                            </Col>
+                                        </Row>
+                                    </Container>
+                                </Dropdown.Item>
+                            ))}
+                        </DropdownButton>
                     )}
+                    <NavLink href={isLoggedIn ? "/profile" : "/login"}>
+                        <PersonFill className="icon-size" />
+                    </NavLink>
+                    <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
                 </Nav>
             </Container>
         </Navbar>

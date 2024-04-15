@@ -175,7 +175,6 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(self.style.WARNING(f'ParkingLot with PK {parking_lot.pk} already exists.'))
 
-
     def seed_parking_spaces(self):
         parking_lots = ParkingLot.objects.all()
         for parking_lot in parking_lots:
@@ -381,6 +380,12 @@ class Command(BaseCommand):
             client_ucid=client_12312312,
             title='Parking Ticket Received',
             message='You have received a new parking ticket.'
+        ))
+        notifications.append(Notification(
+            client_ucid=client_12312312,
+            title='Parking Permit Revoked',
+            message='Due to a large number of outstanding tickets on your account, \
+                your parking permit has been revoked.'
         ))
 
         primary_key = 1
