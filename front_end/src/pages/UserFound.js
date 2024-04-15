@@ -1,3 +1,4 @@
+// Import React and other necessary libraries
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Container, Row, Col, Button, Modal, Form, Alert } from 'react-bootstrap';
@@ -29,8 +30,6 @@ const UserFound = () => {
   const [ticketCount, setTicketCount] = useState(0);
   const [permitRevoked, setPermitRevoked] = useState(false);
 
-  
-
   useEffect(() => {
     // Fetch client conditions when the component mounts
     const fetchClientConditions = async () => {
@@ -60,13 +59,11 @@ const UserFound = () => {
   const handleRevokePermit = async () => {
     try {
       // Send request to backend to delete the permit
-      const response = await axios.delete(`http://localhost:8000/api/revoke-permit/`, {
+      await axios.delete(`http://localhost:8000/api/revoke-permit/`, {
         data: {
           client_ucid: ucid
         }
       });
-
-      console.log(response.data); // Log response from backend
 
       // Set state to trigger re-fetching client conditions
       setPermitRevoked(true);
@@ -76,6 +73,9 @@ const UserFound = () => {
 
       // Show success message
       alert('Permit removed');
+
+      // Reload the page after permit is revoked
+      window.location.reload();
     } catch (error) {
       console.error('Error revoking permit:', error);
     }
@@ -94,29 +94,29 @@ const UserFound = () => {
   // Handle form submit for ticket creation
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     // Validate offence
     if (offence.length === 0) {
       setOffenceError('Offence must be provided');
       return;
     }
-  
+
     // Validate amount due
     const amount = parseInt(amountDue);
     if (isNaN(amount) || amount <= 0) {
       setAmountDueError('Amount due must be a positive integer');
       return;
     }
-  
+
     // Format dates
     const currentDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 14);
     const formattedDueDate = dueDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-  
+
     // Get token from localStorage
     const token = localStorage.getItem('token');
-    
+
     // Set headers with token
     const config = {
       headers: {
@@ -126,16 +126,14 @@ const UserFound = () => {
 
     // Send ticket data to backend
     try {
-      const response = await axios.post('http://localhost:8000/api/tickets/create/', {
+      await axios.post('http://localhost:8000/api/tickets/create/', {
         client_ucid: ucid,
         issue_date: currentDate,
         due_date: formattedDueDate,
         offense: offence,
         amount_due: amount
       }, config);
-  
-      console.log(response.data); // Log response from backend
-  
+
       // Reset form fields and errors
       setOffence('');
       setAmountDue('');
@@ -148,6 +146,9 @@ const UserFound = () => {
 
       // Show success message
       alert('Ticket created');
+
+      // Reload the page after ticket creation
+      window.location.reload();
     } catch (error) {
       console.error('Error creating ticket:', error);
     }
