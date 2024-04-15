@@ -147,9 +147,7 @@ function Header() {
                                     </Dropdown.Item>
                                 ))
                             ) : (
-                                <Container id="dropdown-item-text" className="text-align-center">
-                                    <Dropdown.ItemText style={{ textAling: 'center' }}>No Notifications</Dropdown.ItemText>
-                                </Container>
+                                    <Dropdown.ItemText style={{ textAlign: 'center' }}>No Notifications</Dropdown.ItemText>
                             )}
                         </DropdownButton>
                     )}
