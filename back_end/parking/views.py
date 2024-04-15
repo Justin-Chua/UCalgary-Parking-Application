@@ -9,10 +9,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from .models import (
-    ParkingAdmin, Todo, UniversityMember, 
-    Vehicle, Color, Client,
-    ParkingLot, Ticket, ParkingPermit,
-    Reservation)  # Import Color model
+    ParkingAdmin, UniversityMember, Vehicle, 
+    Color, Client, ParkingLot, 
+    Ticket, ParkingPermit, Reservation, 
+    Notification)
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
@@ -20,19 +20,10 @@ from .authentication import UCIDAuthenticationBackend
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from .serializers import (
-    ClientSerializer, TodoSerializer, UniversityMemberSerializer, 
+    ClientSerializer, UniversityMemberSerializer, 
     UserSerializer, VehicleSerializer, ParkingLotSerializer, 
-    TicketSerializer, ParkingPermitSerializer, ReservationSerializer)
-
-
-class ListTodo(generics.ListCreateAPIView):
-    queryset = Todo.objects.all()
-    serializer_class = TodoSerializer
-
-
-class DetailTodo(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Todo.objects.all()
-    serializer_class = TodoSerializer
+    TicketSerializer, ParkingPermitSerializer, ReservationSerializer,
+    NotificationSerializer)
 
 class MapView(APIView):
     # fetch all parking lots
@@ -66,7 +57,16 @@ class ReservationView(APIView):
         client = Client.objects.get(client_ucid__user=request.user)
         user_reservations = Reservation.objects.filter(client_ucid=client)
         serializer = ReservationSerializer(user_reservations, many=True)
-        return Response(serializer.data)       
+        return Response(serializer.data)
+    
+class NotificationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        client = Client.objects.get(client_ucid__user=request.user)
+        user_notifications = Notification.objects.filter(client_ucid=client)
+        serializer = NotificationSerializer(user_notifications, many=True)
+        return Response(serializer.data)
     
 class SignupView(APIView):
     def post(self, request, format=None):

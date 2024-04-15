@@ -6,7 +6,8 @@ import axios from 'axios';
 
 function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false); 
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [userNotifications, setUserNotifications] = useState([]);
 
     useEffect(() => {
         const token = localStorage.getItem('token'); 
@@ -20,7 +21,27 @@ function Header() {
             .catch(error => {
                 console.error('Error checking admin status:', error); 
             });
-    }, []);
+        // if user is logged in and not an admin, perform fetch to user notifications
+        if (!isAdmin && isLoggedIn) fetchUserNotifications(token);
+    }, [isAdmin, isLoggedIn]);
+
+    const fetchUserNotifications = async (token) => {
+        try {
+            if (!token) {
+                console.error('Token not found');
+                return;
+            }
+            const response = await axios.get('http://127.0.0.1:8000/api/view-notifications/', {
+                headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+                }
+            });
+            setUserNotifications(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const handleLogout = async () => {
         try {
@@ -78,23 +99,18 @@ function Header() {
                 <Nav className="justify-content-end align-items-center flex-grow-1">
                     {isLoggedIn ? ( 
                         <>  
-                            {/* Currently hardcoded */}
-                            <DropdownButton id="dropdown-button" align="end" variant="transparent" title={<BellFill className="icon-size" />}>
-                                <Dropdown.Item id="dropdown-item">
-                                    <h5>Parking Ticket Received</h5>
-                                    <p> You have received a parking ticket! What in the world are you doing kid! </p>
-                                </Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Item id="dropdown-item">
-                                    <h5>Parking Permit Revoked</h5>
-                                    <p> Your permit has been revoked! What in the world are you doing kid! </p>
-                                </Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Item id="dropdown-item">
-                                    <h5>Parking Ticket Overdue</h5>
-                                    <p> Your ticket is overdue! What in the world are you doing kid! </p>
-                                </Dropdown.Item>
-                            </DropdownButton>
+                            {!isAdmin && (
+                                <DropdownButton id="dropdown-button" align="end" variant="transparent" title={<BellFill className="icon-size" />}>
+                                    {userNotifications.map(notification => (
+                                        <>
+                                            <Dropdown.Item id="dropdown-item" key={ notification.notification_id }>
+                                                <h5>{ notification.title }</h5>
+                                                <p>{ notification.message }</p>
+                                            </Dropdown.Item>
+                                        </>
+                                    ))}
+                                </DropdownButton>
+                            )}
                             <NavLink href="/profile">
                                 <PersonFill className="icon-size" />
                             </NavLink>
