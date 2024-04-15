@@ -10,10 +10,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Max
 from .models import (
-    ParkingAdmin, Todo, UniversityMember, 
+    ParkingAdmin, UniversityMember, 
     Vehicle, Color, Client, Payment,
     ParkingLot, Ticket, ParkingPermit,
-    Reservation)  # Import Color model
+    Reservation, Notification)  # Import Color model
 from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User
@@ -21,20 +21,10 @@ from .authentication import UCIDAuthenticationBackend
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from .serializers import (
-    ClientSerializer, TodoSerializer, UniversityMemberSerializer, 
+    ClientSerializer, UniversityMemberSerializer, 
     UserSerializer, VehicleSerializer, ParkingLotSerializer, 
     TicketSerializer, ParkingPermitSerializer, ReservationSerializer,
-    PaymentSerializer, VehiclesDataSerializer)
-
-
-class ListTodo(generics.ListCreateAPIView):
-    queryset = Todo.objects.all()
-    serializer_class = TodoSerializer
-
-
-class DetailTodo(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Todo.objects.all()
-    serializer_class = TodoSerializer
+    PaymentSerializer, VehiclesDataSerializer, NotificationSerializer)
 
 class MapView(APIView):
     # fetch all parking lots
@@ -100,6 +90,25 @@ class MakeReservationView(APIView):
         else:
             print("reserve Serializer Errors:", reserve_serializer.errors)
             return Response(reserve_serializer.errors, status=status.HTTP_400_BAD_REQUEST)      
+
+    
+class NotificationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        client = Client.objects.get(client_ucid__user=request.user)
+        user_notifications = Notification.objects.filter(client_ucid=client)
+        serializer = NotificationSerializer(user_notifications, many=True)
+        return Response(serializer.data)
+    
+    def delete(self, request):
+        try:
+            notification = Notification.objects.get(notification_id=request.data.get('id'))
+            notification.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Notification.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
     
 class SignupView(APIView):
     def post(self, request, format=None):
@@ -353,17 +362,29 @@ class CheckAdminStatus(APIView):
         
         
 class TicketCreateView(APIView):
-    permission_classes = [IsAuthenticated]  # Ensure user is authenticated
+    permission_classes = [IsAuthenticated]  
 
     def post(self, request):
         serializer = TicketSerializer(data=request.data)
         if serializer.is_valid():
-            # Assign the admin_ucid to the logged-in user
-            request.data['admin_ucid'] = request.user.universitymember
-            serializer = TicketSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            client_ucid = serializer.validated_data['client_ucid']
+            
+            # Retrieve the ParkingAdmin instance associated with the logged-in user's university member
+            admin_ucid = ParkingAdmin.objects.get(admin_ucid=request.user.universitymember)
+            
+            ticket = serializer.save(admin_ucid=admin_ucid)
+            
+            # Create a notification for the client
+            notification = Notification.objects.create(
+                client_ucid=client_ucid,
+                title="Parking Ticket Received",
+                message="You have received a new parking ticket.",
+            )
+            
+            ticket.notification_id = notification  # Associate the ticket with the notification
+            ticket.save()
+            
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class PaymentView(APIView):
@@ -391,3 +412,26 @@ class PaymentView(APIView):
             print("Payment Serializer Errors:", payment_serializer.errors)
             return Response(payment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ClientConditionsChecker(APIView):
+    def get(self, request):
+        client_ucid = request.query_params.get('client_ucid')
+        if not client_ucid:
+            return Response({'error': 'Client UCID parameter is missing'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        permit_exists, ticket_count = self.check_client_conditions(client_ucid)
+        return Response({'permit_exists': permit_exists, 'ticket_count': ticket_count})
+
+    def check_client_conditions(self, client_ucid):
+        client = Client.objects.get(client_ucid=client_ucid)
+        permit_exists = ParkingPermit.objects.filter(client_ucid=client).exists()
+        ticket_count = Ticket.objects.filter(client_ucid=client).count()
+        return permit_exists, ticket_count
+    
+    
+class RevokePermitView(APIView):
+    def delete(self, request):
+        client_ucid = request.data.get('client_ucid')
+        permit = get_object_or_404(ParkingPermit, client_ucid=client_ucid)
+        permit.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,7 +1,7 @@
-// UserFound.js
-import React, { useState } from 'react';
+// Import React and other necessary libraries
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Container, Row, Col, Button, Modal, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Modal, Form, Alert } from 'react-bootstrap';
 import axios from 'axios'; // Import Axios for making HTTP requests
 import { SlashCircle, Ticket } from 'react-bootstrap-icons'; // Importing Bootstrap icons
 
@@ -15,56 +15,108 @@ const UserFound = () => {
   const email = params.get('email');
   const licensePlate = params.get('licensePlate');
 
-  // Modal state
+  // Modal state for ticket creation
   const [showModal, setShowModal] = useState(false);
   const [offence, setOffence] = useState('');
   const [amountDue, setAmountDue] = useState('');
   const [offenceError, setOffenceError] = useState('');
   const [amountDueError, setAmountDueError] = useState('');
   const [validationErrors, setValidationErrors] = useState(null);
+  const [ticketCreated, setTicketCreated] = useState(false);
 
-  // Get current date and due date
-  const currentDate = new Date().toLocaleDateString();
-  const dueDate = new Date();
-  dueDate.setDate(dueDate.getDate() + 14);
-  const formattedDueDate = dueDate.toLocaleDateString();
+  // Modal state for permit revocation
+  const [showRevokeModal, setShowRevokeModal] = useState(false);
+  const [permitExists, setPermitExists] = useState(false);
+  const [ticketCount, setTicketCount] = useState(0);
+  const [permitRevoked, setPermitRevoked] = useState(false);
 
-  // Handle modal open
+  useEffect(() => {
+    // Fetch client conditions when the component mounts
+    const fetchClientConditions = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/client_conditions/?client_ucid=${ucid}`);
+        setPermitExists(response.data.permit_exists);
+        setTicketCount(response.data.ticket_count);
+      } catch (error) {
+        console.error('Error fetching client conditions:', error);
+      }
+    };
+
+    fetchClientConditions();
+  }, [ucid, ticketCreated, permitRevoked]);
+
+  // Handle modal open for permit revocation
+  const handleRevokeModalOpen = () => {
+    setShowRevokeModal(true);
+  };
+
+  // Handle modal close for permit revocation
+  const handleRevokeModalClose = () => {
+    setShowRevokeModal(false);
+  };
+
+  // Handle permit revocation
+  const handleRevokePermit = async () => {
+    try {
+      // Send request to backend to delete the permit
+      await axios.delete(`http://localhost:8000/api/revoke-permit/`, {
+        data: {
+          client_ucid: ucid
+        }
+      });
+
+      // Set state to trigger re-fetching client conditions
+      setPermitRevoked(true);
+
+      // Close the modal after permit revocation
+      setShowRevokeModal(false);
+
+      // Show success message
+      alert('Permit removed');
+
+      // Reload the page after permit is revoked
+      window.location.reload();
+    } catch (error) {
+      console.error('Error revoking permit:', error);
+    }
+  };
+
+  // Handle modal open for entering offence details
   const handleModalOpen = () => {
     setShowModal(true);
   };
 
-  // Handle modal close
+  // Handle modal close for entering offence details
   const handleModalClose = () => {
     setShowModal(false);
   };
 
-  // Handle form submit
+  // Handle form submit for ticket creation
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     // Validate offence
     if (offence.length === 0) {
       setOffenceError('Offence must be provided');
       return;
     }
-  
+
     // Validate amount due
     const amount = parseInt(amountDue);
     if (isNaN(amount) || amount <= 0) {
       setAmountDueError('Amount due must be a positive integer');
       return;
     }
-  
+
     // Format dates
     const currentDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 14);
     const formattedDueDate = dueDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-  
+
     // Get token from localStorage
     const token = localStorage.getItem('token');
-    
+
     // Set headers with token
     const config = {
       headers: {
@@ -74,22 +126,29 @@ const UserFound = () => {
 
     // Send ticket data to backend
     try {
-      const response = await axios.post('http://localhost:8000/api/tickets/create/', {
+      await axios.post('http://localhost:8000/api/tickets/create/', {
         client_ucid: ucid,
         issue_date: currentDate,
         due_date: formattedDueDate,
         offense: offence,
         amount_due: amount
       }, config);
-  
-      console.log(response.data); // Log response from backend
-  
+
       // Reset form fields and errors
       setOffence('');
       setAmountDue('');
       setOffenceError('');
       setAmountDueError('');
       setShowModal(false);
+
+      // Set state to trigger re-fetching client conditions
+      setTicketCreated(true);
+
+      // Show success message
+      alert('Ticket created');
+
+      // Reload the page after ticket creation
+      window.location.reload();
     } catch (error) {
       console.error('Error creating ticket:', error);
     }
@@ -110,7 +169,9 @@ const UserFound = () => {
                 <p><strong>License Plate:</strong> {licensePlate}</p>
               </div>
               <div className="d-flex justify-content-between">
-                <SlashCircle size={30} color="red" />
+                <Button variant="danger" onClick={handleRevokeModalOpen} disabled={!permitExists || ticketCount < 3}>
+                  <SlashCircle size={20} style={{ marginRight: '5px' }} /> Revoke Permit
+                </Button>
                 <Button variant="danger" onClick={handleModalOpen}>
                   <Ticket size={20} style={{ marginRight: '5px' }} /> Ticket
                 </Button>
@@ -127,8 +188,8 @@ const UserFound = () => {
           <Modal.Title>Enter Offence Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p><strong>Date Issued:</strong> {currentDate}</p>
-          <p><strong>Due Date:</strong> {formattedDueDate}</p>
+          <p><strong>Date Issued:</strong> {new Date().toLocaleDateString()}</p>
+          <p><strong>Due Date:</strong> {new Date(new Date().getTime() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="offence">
               <Form.Label>Offence</Form.Label>
@@ -153,17 +214,28 @@ const UserFound = () => {
               <Form.Control.Feedback type="invalid">{amountDueError}</Form.Control.Feedback>
             </Form.Group>
             <Button variant="primary" type="submit">
-              Submit
+              Create Ticket
             </Button>
-            {validationErrors && (
-              <div className="mt-2 text-danger">
-                {Object.values(validationErrors).map((error, index) => (
-                  <p key={index}>{error}</p>
-                ))}
-              </div>
-            )}
           </Form>
         </Modal.Body>
+      </Modal>
+
+      {/* Modal for permit revocation */}
+      <Modal show={showRevokeModal} onHide={handleRevokeModalClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Permit Revocation</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to revoke the parking permit?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleRevokeModalClose}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleRevokePermit}>
+            Revoke Permit
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

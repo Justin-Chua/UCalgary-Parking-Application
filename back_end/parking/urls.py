@@ -3,8 +3,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.ListTodo.as_view()),
-    path('<int:pk>/', views.DetailTodo.as_view()),
     path('signup/', views.SignupView.as_view(), name='signup'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
@@ -21,6 +19,11 @@ urlpatterns = [
     path('view-tickets/', views.TicketView.as_view(), name='view-tickets'),
     path('view-permits/', views.ParkingPermitView.as_view(), name='view-permits'),
     path('view-reservations/', views.ReservationView.as_view(), name='view-reservations'),
+
     path('payment/', views.PaymentView.as_view(), name='payment'),
     path('make-reservations/', views.MakeReservationView.as_view(), name='make-reservations'),
+
+    path('client_conditions/', views.ClientConditionsChecker.as_view(), name='client_conditions'),
+    path('revoke-permit/', views.RevokePermitView.as_view(), name='revoke_permit'),
+    path('view-notifications/', views.NotificationView.as_view(), name='view-reservations')
 ]
