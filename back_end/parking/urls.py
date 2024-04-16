@@ -19,6 +19,10 @@ urlpatterns = [
     path('view-tickets/', views.TicketView.as_view(), name='view-tickets'),
     path('view-permits/', views.ParkingPermitView.as_view(), name='view-permits'),
     path('view-reservations/', views.ReservationView.as_view(), name='view-reservations'),
+
+    path('payment/', views.PaymentView.as_view(), name='payment'),
+    path('make-reservations/', views.MakeReservationView.as_view(), name='make-reservations'),
+
     path('client_conditions/', views.ClientConditionsChecker.as_view(), name='client_conditions'),
     path('revoke-permit/', views.RevokePermitView.as_view(), name='revoke_permit'),
     path('view-notifications/', views.NotificationView.as_view(), name='view-reservations')

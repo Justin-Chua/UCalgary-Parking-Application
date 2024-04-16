@@ -180,6 +180,10 @@ function ReserveModal(props) {
     
         let ToHour = "";
         let ToMin = "";
+
+        let start_time = "";
+        let end_time = "";
+        let res_amount_due = "";
     
         if(fromDate.length != 0 && toDate.length != 0){
     
@@ -212,6 +216,9 @@ function ReserveModal(props) {
             ToMin = Number(splitToTime[1]);
     
             timePeriod = ((ToMin - FromMin) + ((ToHour - FromHour) * 60));
+
+            start_time = FromHour + ':' + FromMin;
+            end_time = ToHour + ':' + ToMin;
     
             if((timePeriod/60) >= 5){
                 rateInfo = 'Daily Rate: $22';
@@ -223,6 +230,7 @@ function ReserveModal(props) {
             else{
                 rateInfo = 'Hourly Rate: ' + Math.ceil(timePeriod/60) + 'x CAD $5 = CAD $' + 5 * Math.ceil((timePeriod/60));
                 // setRate((5 * Math.ceil((timePeriod/60))));
+                res_amount_due = 5 * Math.ceil((timePeriod/60));
             }
             
         }
@@ -299,6 +307,7 @@ function ReserveModal(props) {
                                 if(timePeriod >= 15){
                                     validation = true;
                                     
+
                                 }
                                 else if (timePeriod >= 0){
                                     settoDateErrorMessage('Please choose longer period');
@@ -318,7 +327,7 @@ function ReserveModal(props) {
     
             if(validation == true){
     
-                window.location.href = `/payment/?lot_no=${lot_no}&plate_no=${plate}`;
+                window.location.href = `/payment/?lot_no=${lot_no}&plate_no=${plate}&ucid=${ucid}&date=${FromDate}&start_time=${start_time}&end_time=${end_time}&res_amount_due=${res_amount_due}`;
             }
         }
     
