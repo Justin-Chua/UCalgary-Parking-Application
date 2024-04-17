@@ -180,7 +180,7 @@ const UserFound = () => {
           </Row>
         </Container>
       </div>
-      <div style={{ backgroundColor: '#c4c3bb', height: '3000px' }}></div>
+      <div style={{ backgroundColor: '#c4c3bb', height: '35vh' }}></div>
 
       {/* Modal for entering offence details */}
       <Modal show={showModal} onHide={handleModalClose}>

@@ -33,6 +33,8 @@ function Permit() {
     }, []);
     return (
         <>
+            <div style={{ backgroundColor: '#e40c04', height: '7px' }}></div>
+            <div style={{ borderTop: '60px solid #8c847c' }}></div>
             <h1 id="page-header">Parking Permits</h1>
             {userPermits.map(permit => (
                 <Bootstrap.Container key={permit.permit_no} className="card-container">

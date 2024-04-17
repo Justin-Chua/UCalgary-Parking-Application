@@ -34,6 +34,8 @@ function Ticket() {
 
     return (
         <>  
+            <div style={{ backgroundColor: '#e40c04', height: '7px' }}></div>
+            <div style={{ borderTop: '60px solid #8c847c' }}></div>
             <h1 id="page-header">Parking Tickets</h1>
             {userTickets.map(ticket => (
                 <Bootstrap.Container key={ticket.ticket_no} className="card-container">
@@ -48,7 +50,7 @@ function Ticket() {
                                 <Bootstrap.Card.Text><strong>Issue Date: </strong>{ticket.issue_date}</Bootstrap.Card.Text>
                                 <Bootstrap.Card.Text><strong>Due Date: </strong>{ticket.due_date}</Bootstrap.Card.Text>
                                 <Bootstrap.Card.Text><strong>Amount Due: </strong>${ticket.amount_due}.00</Bootstrap.Card.Text>
-                                <Bootstrap.Card.Text>Amount due increases to ${ticket.amount_due + 20}.00 following the due date</Bootstrap.Card.Text>
+                                <Bootstrap.Card.Text>Amount due increases by $20.00 following the due date</Bootstrap.Card.Text>
                             </Bootstrap.Card.Body>
                             <Bootstrap.Card.Footer className="bg-blue">
                                 <small className="text-white">{ticket.paid ? 'Paid' : 'Unpaid'}</small>
@@ -56,7 +58,7 @@ function Ticket() {
                         </Bootstrap.Card>
                 </Bootstrap.Container>
             ))}
-    </>    
+        </>    
     );
 }
 

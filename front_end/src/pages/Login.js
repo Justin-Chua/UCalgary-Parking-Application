@@ -78,7 +78,7 @@ function Login() {
                     </Form>
                 </Container>
             </div>
-            <div style={{ backgroundColor: '#c4c3bb', height: '3000px' }}></div>
+            <div style={{ backgroundColor: '#c4c3bb', height: '50vh' }}></div>
         </div>
     );
 }

@@ -141,7 +141,7 @@ function Signup() {
                 </Form>
             </Container>
             <div style={{ borderTop: '60px solid #8c847c' }}></div>
-            <div style={{ backgroundColor: '#c4c3bb', height: '3000px' }}></div>
+            <div style={{ backgroundColor: '#c4c3bb', height: '30vh' }}></div>
         </div>
     );
 }

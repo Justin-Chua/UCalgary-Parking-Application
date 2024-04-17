@@ -33,14 +33,15 @@ function Reservation() {
     }, []);
 
     return (
-        // Add backend for this later - currently hardcoded
         <>  
+            <div style={{ backgroundColor: '#e40c04', height: '7px' }}></div>
+            <div style={{ borderTop: '60px solid #8c847c' }}></div>
             <h1 id="page-header">Parking Reservations</h1>
             {userReservations.map(reservation => (
                 <Bootstrap.Container key={ reservation.lot_no } className="card-container">
                     <Bootstrap.Card border="dark" className="d-flex">
                         <Bootstrap.Card.Header className="d-flex bg-berry justify-content-between align-items-center text-white">
-                            <h1>{ reservation.lot_no }</h1>
+                            <h1>Lot { reservation.lot_no }</h1>
                             <Icons.CalendarCheckFill className="icon-size" />
                         </Bootstrap.Card.Header>
                         <Bootstrap.Card.Body className="text-center">
@@ -56,7 +57,7 @@ function Reservation() {
                     </Bootstrap.Card>
                 </Bootstrap.Container>
             ))}
-    </>    
+        </>    
     );
 }
 

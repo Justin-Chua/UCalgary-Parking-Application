@@ -54,7 +54,7 @@ const UserSearch = () => {
           </Row>
         </Container>
       </div>
-      <div style={{ backgroundColor: '#c4c3bb', height: '3000px' }}></div>
+      <div style={{ backgroundColor: '#c4c3bb', height: '35vh' }}></div>
     </div>
   );
 };

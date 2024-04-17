@@ -24,9 +24,13 @@ def delete_expired_reservations():
 @shared_task
 def notify_overdue_tickets():
     # filter based on if due date is before today's date
-    overdue_ticket_set = Ticket.objects.filter(due_date__lte=datetime.date.today())
+    overdue_ticket_set = Ticket.objects.filter(due_date__lt=datetime.date.today())
     # create a new notification for all overdue tickets
     for overdue_ticket in overdue_ticket_set:
+        if (overdue_ticket.due_date == datetime.date.today() - datetime.timedelta(days=1)):
+            overdue_ticket.amount_due += 20
+            overdue_ticket.save()
+
         notification = Notification(
             client_ucid=overdue_ticket.client_ucid,
             title='Parking Ticket Overdue',
