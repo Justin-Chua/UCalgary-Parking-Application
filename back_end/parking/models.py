@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 
 class ParkingLot(models.Model):
     lot_no = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(36)], primary_key=True, unique=True
+        validators=[MinValueValidator(1), MaxValueValidator(80)], primary_key=True, unique=True
     )
     # x coordinate
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
@@ -196,6 +196,9 @@ class Reservation(models.Model):
     lot_no = models.ForeignKey(
         ParkingLot, to_field='lot_no', on_delete=models.CASCADE
     )
+    stall = models.OneToOneField(
+        ParkingSpace, on_delete=models.CASCADE, null=True
+    )
     client_ucid = models.ForeignKey(
         Client, to_field='client_ucid', on_delete=models.SET_NULL, null=True
     )
@@ -210,15 +213,6 @@ class Reservation(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['lot_no', 'client_ucid'], name='reservation_primary_keys')
         ]
-
-# Create your models here.
-class Todo(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-
-    def __str__(self):
-        """A string representation of the model."""
-        return self.title
 
 
 

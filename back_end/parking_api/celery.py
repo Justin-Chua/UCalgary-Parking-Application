@@ -15,10 +15,6 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks(['parking_api'])
 
 app.conf.beat_schedule = {
-    'delete-tickets' : {
-        'task' : 'parking_api.tasks.delete_paid_tickets',
-        'schedule' : 60.0
-    },
     'delete-expired-reservations' : {
         'task' : 'parking_api.tasks.delete_expired_reservations',
         'schedule' : 60.0
@@ -29,6 +25,6 @@ app.conf.beat_schedule = {
     },
     'notify-overdue-tickets' : {
         'task' : 'parking_api.tasks.notify_overdue_tickets',
-        'schedule' : 60.0
+        'schedule' : 60.0 * 60 * 24 * 7
     }
 }

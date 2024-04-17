@@ -196,6 +196,10 @@ class Command(BaseCommand):
                         stalls_found = False
                     else:
                         stalls_found = True
+                    if ((parking_space.lot_no.lot_no == 13 or parking_space.lot_no.lot_no == 64) 
+                        and parking_space.zone == 'A' and parking_space.stall_no == 2):
+                        parking_space.occupied = True
+                        parking_space.save()
             if not stalls_found:
                 self.stdout.write(self.style.SUCCESS(f'Parking Stalls for Lot {parking_lot.pk} created successfully.'))
             else:
@@ -551,10 +555,15 @@ class Command(BaseCommand):
     def seed_reservations(self):
         reservations = []
         lot_13 = ParkingLot.objects.get(lot_no=13)
+        stall_13_A2 = ParkingSpace.objects.get(
+            lot_no=lot_13,
+            zone='A',
+            stall_no=2)
         client_30098941 = Client.objects.get(client_ucid=30098941)
         payment_4 = Payment.objects.get(pk=4)
         reservations.append(Reservation(
             lot_no=lot_13,
+            stall=stall_13_A2,
             client_ucid=client_30098941,
             payment_no=payment_4,
             date=datetime.date.today(),
@@ -563,10 +572,15 @@ class Command(BaseCommand):
             res_amount_due=9
         ))
         lot_64 = ParkingLot.objects.get(lot_no=64)
+        stall_64_A2 = ParkingSpace.objects.get(
+            lot_no=lot_64,
+            zone='A',
+            stall_no=2)
         client_12312312 = Client.objects.get(client_ucid=12312312)
         payment_5 = Payment.objects.get(pk=5)
         reservations.append(Reservation(
             lot_no=lot_64,
+            stall=stall_64_A2,
             client_ucid=client_12312312,
             payment_no=payment_5,
             date=datetime.date.today(),

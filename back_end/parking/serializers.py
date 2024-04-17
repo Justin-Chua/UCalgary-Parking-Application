@@ -1,6 +1,6 @@
 # todos/serializers.py
 from rest_framework import serializers
-from .models import ParkingSpace, Todo, UniversityMember, Vehicle, Color, Client, ParkingLot, Ticket, ParkingPermit, Reservation, Payment, Notification
+from .models import ParkingSpace, UniversityMember, Vehicle, Color, Client, ParkingLot, Ticket, ParkingPermit, Reservation, Payment, Notification
 from rest_framework import exceptions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth.models import User

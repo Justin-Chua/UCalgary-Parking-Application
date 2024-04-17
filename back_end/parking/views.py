@@ -52,9 +52,6 @@ class ParkingPermitView(APIView):
         serializer = ParkingPermitSerializer(user_permits, many=True)
         return Response(serializer.data)
     
-    
-        
-    
 class ReservationView(APIView):
     permission_classes = [IsAuthenticated]
 
