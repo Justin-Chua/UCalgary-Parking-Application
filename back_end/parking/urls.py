@@ -25,5 +25,8 @@ urlpatterns = [
 
     path('client_conditions/', views.ClientConditionsChecker.as_view(), name='client_conditions'),
     path('revoke-permit/', views.RevokePermitView.as_view(), name='revoke_permit'),
-    path('view-notifications/', views.NotificationView.as_view(), name='view-reservations')
+    path('view-notifications/', views.NotificationView.as_view(), name='view-reservations'),
+    path('api/detailed-lot/', views.DetailedLotData.as_view(), name='detailed_lot_data'),
+    path('parking_spaces/', views.ParkingSpaceListView.as_view(), name='parking_spaces'),
+    path('api/update-parking-space/', views.UpdateParkingSpace.as_view(), name='update_parking_space'),
 ]
