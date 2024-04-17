@@ -22,6 +22,16 @@ def delete_expired_reservations():
         expired_reservation.delete()
 
 @shared_task
+def update_occupied_spaces():
+    active_reservation_set = Reservation.objects.filter(
+        start_time__lte=datetime.datetime.now().time(), 
+        end_time__gte=datetime.datetime.now().time())
+    for active_reservation in active_reservation_set:
+        if not active_reservation.stall.occupied:
+            active_reservation.stall.occupied = True
+            active_reservation.stall.save()
+
+@shared_task
 def notify_overdue_tickets():
     # filter based on if due date is before today's date
     overdue_ticket_set = Ticket.objects.filter(due_date__lt=datetime.date.today())

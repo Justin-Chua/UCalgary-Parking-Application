@@ -196,10 +196,6 @@ class Command(BaseCommand):
                         stalls_found = False
                     else:
                         stalls_found = True
-                    if ((parking_space.lot_no.lot_no == 13 or parking_space.lot_no.lot_no == 64) 
-                        and parking_space.zone == 'A' and parking_space.stall_no == 2):
-                        parking_space.occupied = True
-                        parking_space.save()
             if not stalls_found:
                 self.stdout.write(self.style.SUCCESS(f'Parking Stalls for Lot {parking_lot.pk} created successfully.'))
             else:
