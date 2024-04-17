@@ -5,12 +5,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import authenticate, login
+from django.views import View
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Max
 from .models import (
-    ParkingAdmin, UniversityMember, 
+    ParkingAdmin, ParkingSpace, UniversityMember, 
     Vehicle, Color, Client, Payment,
     ParkingLot, Ticket, ParkingPermit,
     Reservation, Notification)  # Import Color model
@@ -21,7 +22,7 @@ from .authentication import UCIDAuthenticationBackend
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from .serializers import (
-    ClientSerializer, UniversityMemberSerializer, 
+    ClientSerializer, ParkingSpaceSerializer, UniversityMemberSerializer, 
     UserSerializer, VehicleSerializer, ParkingLotSerializer, 
     TicketSerializer, ParkingPermitSerializer, ReservationSerializer,
     PaymentSerializer, VehiclesDataSerializer, NotificationSerializer)
@@ -435,3 +436,48 @@ class RevokePermitView(APIView):
         permit = get_object_or_404(ParkingPermit, client_ucid=client_ucid)
         permit.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class DetailedLotData(APIView):
+    def get(self, request, lot_no):
+        try:
+            # Retrieve occupancy data for the specified lot number
+            
+            detailed_lot = detailed_lot.objects.get(lot_no=lot_no)
+            # Assume you have a field named 'occupied_spaces' in your DetailedLot model
+            occupied_spaces = detailed_lot.occupied_spaces
+            # Further processing to format the data as needed
+            
+            # Return the occupancy data as a JSON response
+            return Response({'parking_spaces': occupied_spaces}, status=status.HTTP_200_OK)
+        except detailed_lot.DoesNotExist:
+            # Handle case where lot number is not found
+            return Response({'error': 'Lot number not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Handle other exceptions
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+class ParkingSpaceListView(APIView):
+    def get(self, request):
+        lot_no = request.query_params.get('lot_no')
+        ParkingInfo = ParkingLot(lot_no=lot_no)
+        queryset = ParkingSpace.objects.filter(lot_no=ParkingInfo)
+        serializer_class = ParkingSpaceSerializer(queryset, many = True)
+        return Response(serializer_class.data)
+    
+    
+class UpdateParkingSpace(View):
+    def post(self, request):
+        data = request.POST  # Assuming data is sent via POST request
+        lot_no = data.get('lot_no')
+        space_id = data.get('space_id')
+
+        try:
+            parking_space = ParkingSpace.objects.get(lot_no=lot_no, space_id=space_id)
+            parking_space.occupied = True
+            parking_space.save()
+            return JsonResponse({'message': 'ParkingSpace updated successfully'}, status=200)
+        except ParkingSpace.DoesNotExist:
+            return JsonResponse({'error': 'ParkingSpace not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

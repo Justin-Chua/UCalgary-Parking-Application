@@ -32,6 +32,7 @@ class ParkingSpace(models.Model):
     stall_no = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(99)]
     )
+    occupied = models.BooleanField(default=False)
 
 class Vehicle(models.Model):
     plate_no = models.CharField(max_length=7, primary_key=True, unique=True)

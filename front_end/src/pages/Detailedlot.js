@@ -1,109 +1,129 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Row, Col } from 'react-bootstrap'; 
+import axios from 'axios';
 import Modal from 'react-bootstrap/Modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useLocation } from 'react-router-dom';
 
 function DetailedLot() {
-    // Dummy data for demonstration
     const [parkingStalls, setParkingStalls] = useState([]);
-    //const totalStalls = 112; // Total number of stalls
     const [modalShow, setModalShow] = useState(false);
     const [selectedStallId, setSelectedStallId] = useState(null);
+    const [selectedStall, setSelectedStall] = useState(null);
 
     const location = useLocation();
     const params = new URLSearchParams(location.search);
     const lot_no = params.get("lot_no");
     const totalStalls = params.get('capacity');
+    
 
     useEffect(() => {
-        // Generate dummy data for demonstration
-        const generateParkingStalls = () => {
-            const newStalls = [];
-            for (let i = 1; i <= totalStalls; i++) {
-                newStalls.push({ id: i, available: Math.random() < 0.5 });
+        const fetchParkingStalls = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/parking_spaces/', {
+                    params: { lot_no: lot_no } // Send lot_no as a query parameter
+                });
+                setParkingStalls(response.data);
+                console.log(response.data)
+            } catch (error) {
+                console.error('Error fetching parking spaces:', error);
             }
-            setParkingStalls(newStalls);
         };
-
-        generateParkingStalls();
-    }, []);
+    
+        fetchParkingStalls();
+    }, [lot_no]); // Add lot_no as a dependency to useEffect
 
     const resetModal = () => {
         setModalShow(false);
-        // Reset other states if there are any
+    };
+
+    const handleButtonClick = (stall) => {
+        console.log('Button clicked for space ID:', stall.space_id);
+        setSelectedStall(stall);
+        setModalShow(true);
     };
 
     const renderParkingStalls = () => {
-        // For multiple groups
         const stallsPerGroup = 20;
-        const totalGroups = Math.ceil(parkingStalls.length / stallsPerGroup);
-
+        const totalGroups = Math.ceil(totalStalls / stallsPerGroup);
         const groups = [];
-
+    
         for (let groupIndex = 0; groupIndex < totalGroups; groupIndex++) {
             const startIdx = groupIndex * stallsPerGroup;
-            const endIdx = Math.min(startIdx + stallsPerGroup, parkingStalls.length);
+            const endIdx = Math.min(startIdx + stallsPerGroup, totalStalls);
             const groupStalls = parkingStalls.slice(startIdx, endIdx);
-
+    
             const groupRows = [];
-
+    
             for (let rowIndex = 0; rowIndex < Math.ceil(groupStalls.length / 2); rowIndex++) {
                 const rowStalls = groupStalls.slice(rowIndex * 2, rowIndex * 2 + 2);
-                const rowButtons = rowStalls.map(stall => (
-                    <Button 
-                        key={stall.id} 
-                        variant={stall.available ? 'success' : 'danger'} 
-                        disabled={!stall.available}
-                        style={{ width: '90px', height: '50px', margin: '1px'}}
-                        onClick={() => {setModalShow(true); setSelectedStallId(stall.id)}}
-                    >
-                        {stall.id}
-                    </Button>
-                ));
+                const rowButtons = rowStalls.map((stall, idx) => {
+                    const labelIndex = startIdx + rowIndex * 2 + idx + 1;
+                    const labelLetter = String.fromCharCode(65 + Math.floor((labelIndex - 1) / 10)); // Convert index to letter
+                    const labelNumber = labelIndex % 10 === 0 ? 10 : labelIndex % 10; // Handle 10th button as 10 instead of 0
+                    return (
+                        <Button 
+                            key={stall.space_id} 
+                            variant={stall.occupied ? 'danger' : 'success'} 
+                            disabled={stall.occupied}
+                            onClick={() => handleButtonClick(stall)}
+                            style={{ width: '90px', height: '50px', margin: '1px'}}
+                        >
+                            {`${labelLetter}${labelNumber}`} {/* Combine letter and number for label */}
+                        </Button>
+                    );
+                });
                 groupRows.push(
                     <Row key={rowIndex} className="mb-0" style={{ borderBottom: '1px solid yellow', height: 'auto', width: '185px' }}>
                         {rowButtons}
                     </Row>
                 );
             }
-
-            let marginLeft = 0;
-            let marginRight = 0;
-
-            // Calculate margin dynamically for centering based on the number of groups
-            const totalMargin = 8 - totalGroups;
-            marginLeft = marginRight = totalMargin * 10; // Adjust as needed
-
-            groups.push(
-                <Col key={groupIndex} style={{ marginLeft: `${marginLeft}px`, marginRight: `${marginRight}px`, marginBottom: '20px' }}>
-                    <Container>
-                        {groupRows}
-                    </Container>
-                </Col>
-            );
+    
+            groups.push(groupRows);
         }
-
-        return groups;
+    
+        let marginRight = 0;
+    
+        // Calculate margin dynamically for centering based on the number of groups
+        const totalMargin = 10 - totalGroups;
+        const marginLeft = marginRight = totalMargin * 10; // Adjust as needed
+    
+        // Stack groups A1-A10 with group B1-B10 and similarly for all groups of 2 letters
+        const stackedGroups = [];
+        for (let i = 0; i < groups.length; i += 2) {
+            const combinedGroup = (
+                <Row key={`stackedGroup${i / 2}`} className="mb-0">
+                    <Col style={{ marginLeft: `${marginLeft}px`, marginRight: `${marginRight}px` }}>
+                        {groups[i]}
+                    </Col>
+                    {groups[i + 1] &&
+                        <Col style={{ marginLeft: `${marginLeft}px`, marginRight: `${marginRight}px` }}>
+                            {groups[i + 1]}
+                        </Col>
+                    }
+                </Row>
+            );
+            stackedGroups.push(combinedGroup);
+        }
+    
+        return stackedGroups;
     };
 
     return (
         <div style={{ backgroundColor: '#262625', minHeight: '100vh', padding: '20px' }}>
             <Container fluid className="d-flex align-items-start justify-content-center">
-                <Row>
-                    {renderParkingStalls()}
-                </Row>
+                {renderParkingStalls()}
             </Container>
             <ReserveModal 
                 show={modalShow} 
                 onHide={resetModal} 
-                // onHide={() => setModalShow(false)} 
-                selectedStallId={selectedStallId} 
+                selectedStall={selectedStall} 
                 lot_no={lot_no}
             />
         </div>
     );
-}   
+} 
 
 function ReserveModal(props) {
 
@@ -326,8 +346,9 @@ function ReserveModal(props) {
             }
     
             if(validation == true){
-    
-                window.location.href = `/payment/?lot_no=${lot_no}&plate_no=${plate}&ucid=${ucid}&date=${FromDate}&start_time=${start_time}&end_time=${end_time}&res_amount_due=${res_amount_due}`;
+                const selectedStall = props.selectedStall;
+                const { space_id, zone, stall_no } = selectedStall;
+                window.location.href = `/payment/?lot_no=${lot_no}&plate_no=${plate}&ucid=${ucid}&date=${FromDate}&start_time=${start_time}&end_time=${end_time}&res_amount_due=${res_amount_due}&stall_id=${space_id}&zone=${zone}&stall_no=${stall_no}`;
             }
         }
     
@@ -340,7 +361,10 @@ function ReserveModal(props) {
                     <h4>
                         <div>{props.data}</div>
                     </h4>
-                    <h4>Selected Stall: Lot {props.lot_no} - {props.selectedStallId}</h4>
+                    {/* Adjusted section for displaying selected stall information */}
+                    <div>
+                        <h4>Selected Stall: Lot {props.lot_no} - {props.selectedStall ? `${props.selectedStall.zone}${props.selectedStall.stall_no}` : ''}</h4>
+                    </div>
                     <p>
                         Please enter your information for reservation.
                     </p>
@@ -415,3 +439,4 @@ function ReserveModal(props) {
 }
 
 export default DetailedLot;
+
