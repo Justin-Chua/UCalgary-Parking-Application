@@ -16,7 +16,7 @@ function Map() {
     });
     const fetchParkingLots = async () => {
         try {
-            const response = await axios.get('https://ucalgary-parking-application-production.up.railway.app/api/map');
+            const response = await axios.get('https://ucalgary-parking-application-production.up.railway.app/api/map/');
             setParkingLots(response.data);
         } catch (error) {
             console.log(error);
