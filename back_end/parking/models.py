@@ -62,7 +62,7 @@ class UniversityMember(models.Model):
         validators=[
             MinLengthValidator(8),
             MaxLengthValidator(8),
-            RegexValidator(regex='^\d{8}$', message="UCID must be exactly 8 digits.")
+            RegexValidator(regex=r'^\d{8}$', message="UCID must be exactly 8 digits.")
         ],
         max_length=8,
         unique=True
@@ -75,7 +75,7 @@ class UniversityMember(models.Model):
         validators=[
             MinLengthValidator(10),
             MaxLengthValidator(10),
-            RegexValidator(regex='^\d{10}$', message="Phone number must be exactly 10 digits.")
+            RegexValidator(regex=r'^\d{10}$', message="Phone number must be exactly 10 digits.")
         ],
         max_length=10
     )
@@ -146,7 +146,7 @@ class Payment(models.Model):
         validators=[
             MinLengthValidator(3),
             MaxLengthValidator(3),
-            RegexValidator(regex='^\d{3}$', message="Cvc must be 3 digits long")
+            RegexValidator(regex=r'^\d{3}$', message="Cvc must be 3 digits long")
         ],
         max_length=3
     )
