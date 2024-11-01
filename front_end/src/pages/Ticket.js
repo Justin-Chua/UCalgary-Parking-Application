@@ -16,7 +16,7 @@ function Ticket() {
                 console.error('Token not found');
                 return;
             }
-            const response = await axios.get('https://ucalgary-parking-application-production.up.railway.app//api/view-tickets/', {
+            const response = await axios.get('https://ucalgary-parking-application-production.up.railway.app/api/view-tickets/', {
                 headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'

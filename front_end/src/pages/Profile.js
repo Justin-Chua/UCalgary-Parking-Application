@@ -21,14 +21,14 @@ function Profile() {
           return;
         }
 
-        const profileResponse = await axios.get('https://ucalgary-parking-application-production.up.railway.app//api/profile/', {
+        const profileResponse = await axios.get('https://ucalgary-parking-application-production.up.railway.app/api/profile/', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
 
-        const vehicleResponse = await axios.get('https://ucalgary-parking-application-production.up.railway.app//api/view-vehicles/', {
+        const vehicleResponse = await axios.get('https://ucalgary-parking-application-production.up.railway.app/api/view-vehicles/', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -39,7 +39,7 @@ function Profile() {
         setVehicles(vehicleResponse.data); // Update vehicles state with retrieved vehicle information
 
         // Check if the user is an admin
-        const adminResponse = await axios.get('https://ucalgary-parking-application-production.up.railway.app//api/check-admin-status/', {
+        const adminResponse = await axios.get('https://ucalgary-parking-application-production.up.railway.app/api/check-admin-status/', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -76,7 +76,7 @@ function Profile() {
         console.error('Token not found');
         return;
       }
-      const response = await axios.post('https://ucalgary-parking-application-production.up.railway.app//api/add-vehicle/', vehicleData, {
+      const response = await axios.post('https://ucalgary-parking-application-production.up.railway.app/api/add-vehicle/', vehicleData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ function Profile() {
             console.error('Token not found');
             return;
         }
-        await axios.delete('https://ucalgary-parking-application-production.up.railway.app//api/delete-vehicle/', {
+        await axios.delete('https://ucalgary-parking-application-production.up.railway.app/api/delete-vehicle/', {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',

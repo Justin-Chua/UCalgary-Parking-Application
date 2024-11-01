@@ -143,7 +143,7 @@ function Payment() {
             let makePayment = async () => {
                 console.log('payment data:', paymentData);
                 try{
-                    const response = await axios.post('https://ucalgary-parking-application-production.up.railway.app//api/payment/', paymentData) 
+                    const response = await axios.post('https://ucalgary-parking-application-production.up.railway.app/api/payment/', paymentData) 
                     if (response.status === 200) {
                         setSuccessMessage('Payment added.');
                         setTimeout(() => {
@@ -176,7 +176,7 @@ function Payment() {
             console.log('reserve data:', reserveData);
             try{
                 let wait = await makePayment();
-                const response = await axios.post(`https://ucalgary-parking-application-production.up.railway.app//api/make-reservations/?ucid=${ucid}`, reserveData);
+                const response = await axios.post(`https://ucalgary-parking-application-production.up.railway.app/api/make-reservations/?ucid=${ucid}`, reserveData);
                 if (response.status === 200) {
                     setSuccessMessage('Reservation added.');
                     setTimeout(() => {
@@ -195,7 +195,7 @@ function Payment() {
             try {
                 // Assuming the plate_no should be part of the endpoint query and lot_no in the body
                 
-                const response = await axios.post(`https://ucalgary-parking-application-production.up.railway.app//api/vehicles-data/?plate_no=${plate_no}`, {lot_no});
+                const response = await axios.post(`https://ucalgary-parking-application-production.up.railway.app/api/vehicles-data/?plate_no=${plate_no}`, {lot_no});
                 console.log(lot_no);
                 if (response.status === 200) {
                     setSuccessMessage('Lot number successfully updated.');

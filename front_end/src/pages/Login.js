@@ -17,7 +17,7 @@ function Login() {
         }
     
         try {
-            const response = await axios.post('https://ucalgary-parking-application-production.up.railway.app//api/login/', { ucid, password });
+            const response = await axios.post('https://ucalgary-parking-application-production.up.railway.app/api/login/', { ucid, password });
             if (response.status === 200) {
                 const token = response.data.token;
                 console.log('Token received:', token);

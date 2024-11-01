@@ -20,7 +20,7 @@ function DetailedLot() {
     useEffect(() => {
         const fetchParkingStalls = async () => {
             try {
-                const response = await axios.get('https://ucalgary-parking-application-production.up.railway.app//api/parking_spaces/', {
+                const response = await axios.get('https://ucalgary-parking-application-production.up.railway.app/api/parking_spaces/', {
                     params: { lot_no: lot_no } // Send lot_no as a query parameter
                 });
                 setParkingStalls(response.data);

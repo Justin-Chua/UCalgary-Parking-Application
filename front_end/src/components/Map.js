@@ -16,7 +16,7 @@ function Map() {
     });
     const fetchParkingLots = async () => {
         try {
-            const response = await axios.get('https://ucalgary-parking-application-production.up.railway.app//api/map');
+            const response = await axios.get('https://ucalgary-parking-application-production.up.railway.app/api/map');
             setParkingLots(response.data);
         } catch (error) {
             console.log(error);
@@ -29,7 +29,7 @@ function Map() {
     const fetchLotInfo = async (event, lotNo) => {
         event.preventDefault();
         try{
-            const response = await axios.get(`https://ucalgary-parking-application-production.up.railway.app//api/map-popup/?lot_no=${lotNo}`);
+            const response = await axios.get(`https://ucalgary-parking-application-production.up.railway.app/api/map-popup/?lot_no=${lotNo}`);
             const lotData = response.data;
             const lotData2 = Object.values(lotData[0]);
             console.log('Response data:', lotData2[0]);

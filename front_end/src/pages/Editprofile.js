@@ -24,7 +24,7 @@ function EditProfile() {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('https://ucalgary-parking-application-production.up.railway.app//api/profile/', {
+            const response = await axios.post('https://ucalgary-parking-application-production.up.railway.app/api/profile/', {
                 address,
                 phoneNo,
                 password
