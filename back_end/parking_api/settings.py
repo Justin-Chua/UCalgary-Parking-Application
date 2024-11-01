@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-d!$c#v6#^e2_lvd@nfe#%$w(v3!%s(*$)vr&1ktr-*q%=4s_rq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["ucalgary-parking-application-production.up.railway.app"]
 
 
 # Application definition
