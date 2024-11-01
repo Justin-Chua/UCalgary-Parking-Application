@@ -84,6 +84,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'https://ucalgary-parking.vercel.app'
 ]
 
 ROOT_URLCONF = 'parking_api.urls'
