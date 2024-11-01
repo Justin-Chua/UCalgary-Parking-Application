@@ -15,7 +15,7 @@ function Header() {
         setIsLoggedIn(!!token);
 
         // Check if the user is an admin
-        axios.get('http://127.0.0.1:8000/api/check-admin-status/', { headers: { Authorization: `Bearer ${token}` } })
+        axios.get('https://ucalgary-parking-application-production.up.railway.app//api/check-admin-status/', { headers: { Authorization: `Bearer ${token}` } })
             .then(response => {
                 setIsAdmin(response.data.isAdmin);
             })
@@ -53,7 +53,7 @@ function Header() {
                 console.error('Token not found');
                 return;
             }
-            const response = await axios.get('http://127.0.0.1:8000/api/view-notifications/', {
+            const response = await axios.get('https://ucalgary-parking-application-production.up.railway.app//api/view-notifications/', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -73,7 +73,7 @@ function Header() {
                 console.error('Token not found');
                 return;
             }
-            await axios.delete('http://127.0.0.1:8000/api/view-notifications/', {
+            await axios.delete('https://ucalgary-parking-application-production.up.railway.app//api/view-notifications/', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -96,7 +96,7 @@ function Header() {
     const handleLogout = async () => {
         try {
             const refreshToken = sessionStorage.getItem('refreshToken');
-            await axios.post('http://127.0.0.1:8000/api/logout/', { refresh_token: refreshToken });
+            await axios.post('https://ucalgary-parking-application-production.up.railway.app//api/logout/', { refresh_token: refreshToken });
 
             localStorage.removeItem('token');
 

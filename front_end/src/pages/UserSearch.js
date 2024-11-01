@@ -10,7 +10,7 @@ const UserSearch = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/usersearch/?licensePlate=${licensePlate}`);
+      const response = await axios.get(`https://ucalgary-parking-application-production.up.railway.app//api/usersearch/?licensePlate=${licensePlate}`);
       const userData = response.data;
       // Redirect to UserFound page with user data in the URL query params
       window.location.href = `/userfound?fullName=${userData.name}&ucid=${userData.ucid}&email=${userData.email}&licensePlate=${userData.plateNumber}`;

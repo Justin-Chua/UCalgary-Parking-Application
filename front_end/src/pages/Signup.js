@@ -44,7 +44,7 @@ function Signup() {
             };
             
             
-            axios.post('http://127.0.0.1:8000/api/signup/', userData) 
+            axios.post('https://ucalgary-parking-application-production.up.railway.app//api/signup/', userData) 
                 .then(response => {
                     console.log('User registered:', response.data);
                     

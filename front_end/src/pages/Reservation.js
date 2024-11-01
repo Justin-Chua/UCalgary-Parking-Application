@@ -16,7 +16,7 @@ function Reservation() {
                 console.error('Token not found');
                 return;
             }
-            const response = await axios.get('http://127.0.0.1:8000/api/view-reservations/', {
+            const response = await axios.get('https://ucalgary-parking-application-production.up.railway.app//api/view-reservations/', {
                 headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
