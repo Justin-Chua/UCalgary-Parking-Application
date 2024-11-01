@@ -34,7 +34,7 @@ const UserFound = () => {
     // Fetch client conditions when the component mounts
     const fetchClientConditions = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/client_conditions/?client_ucid=${ucid}`);
+        const response = await axios.get(`https://ucalgary-parking-application-production.up.railway.app/api/client_conditions/?client_ucid=${ucid}`);
         setPermitExists(response.data.permit_exists);
         setTicketCount(response.data.ticket_count);
       } catch (error) {
@@ -59,7 +59,7 @@ const UserFound = () => {
   const handleRevokePermit = async () => {
     try {
       // Send request to backend to delete the permit
-      await axios.delete(`http://localhost:8000/api/revoke-permit/`, {
+      await axios.delete(`https://ucalgary-parking-application-production.up.railway.app/api/revoke-permit/`, {
         data: {
           client_ucid: ucid
         }
@@ -126,7 +126,7 @@ const UserFound = () => {
 
     // Send ticket data to backend
     try {
-      await axios.post('http://localhost:8000/api/tickets/create/', {
+      await axios.post('https://ucalgary-parking-application-production.up.railway.app/api/tickets/create/', {
         client_ucid: ucid,
         issue_date: currentDate,
         due_date: formattedDueDate,
